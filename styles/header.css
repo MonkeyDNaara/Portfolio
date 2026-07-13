@@ -1,0 +1,80 @@
+@import url("style.css");
+
+.header-container {
+  height: var(--header-height);
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--color-bg-header-footer);
+}
+
+.header-title-container {
+  padding: 14px 16px;
+}
+
+.header-title {
+  font-size: xx-large;
+  color: var(--color-text-header-footer);
+}
+
+.header-nav-container {
+  height: 100%;
+  background-color: var(--color-bg-header-footer);
+  display: flex;
+  align-items: center;
+}
+
+.header-nav-container ul {
+  list-style-type: none;
+  margin: 0px 20px;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--color-bg-header-footer);
+}
+
+.header-nav-container ul li {
+  float: left;
+  margin: 0px 5px;
+}
+
+.header-nav-container ul li a {
+  display: block;
+  color: var(--color-text-header-footer);
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.header-nav-container ul li a:hover {
+  background-color: #111111;
+}
+
+.nav-active {
+  background-color: var(--color-primary);
+}
+
+.header-button-container {
+  height: 100%;
+  margin: 0px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-button {
+  height: 40px;
+  width: 80px;
+  border: 2px solid white;
+  border-radius: 7px;
+  color: var(--color-text-header-footer);
+  background-color: var(--color-bg-header-footer);
+}
+
+.header-button:hover {
+  background-color: var(--color-primary);
+}
+
+.header-button:active {
+  background-color: #111111;
+}

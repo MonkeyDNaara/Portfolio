@@ -1,0 +1,50 @@
+@import url("header.css");
+@import url("main.css");
+@import url("footer.css");
+
+:root {
+  --color-primary: #2563eb;
+  --color-text: #1f2937;
+  --color-bg: #ffffff;
+  --color-bg-header-footer: #333333;
+  --color-text-header-footer: #ffffff;
+  --color-text-inactive: #777777;
+  --header-height: 100px;
+  --footer-height: 50px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+h1 {
+  padding: 20px 0px;
+  font-weight: bold;
+}
+
+h2 {
+  padding-top: 15px;
+}
+
+.main-header {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+}
+
+.body-container {
+  height: 100vh;
+}
