@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
 from .database import SessionLocal
-from .routers import auth, projects
+from .routers import ai, auth, projects
 from .users import ensure_admin
 
 settings = get_settings()
@@ -28,6 +28,7 @@ app.add_middleware(
 )
 
 
+app.include_router(ai.router)
 app.include_router(auth.router)
 app.include_router(projects.router)
 

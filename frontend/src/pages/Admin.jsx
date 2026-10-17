@@ -17,6 +17,7 @@ export default function Admin() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
@@ -46,6 +47,25 @@ export default function Admin() {
   function reset() {
     setEditingId(null);
     setForm(EMPTY);
+  }
+
+  async function generate() {
+    setGenerating(true);
+    setError("");
+    setMessage("");
+    try {
+      const data = await api("/ai/generate-description", {
+        method: "POST",
+        body: { repo_url: form.repo_url },
+        token,
+      });
+      setForm((f) => ({ ...f, description: data.description }));
+      setMessage("Draft added. Read it and edit it before saving.");
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setGenerating(false);
+    }
   }
 
   async function onSubmit(e) {
@@ -116,6 +136,11 @@ export default function Admin() {
           Description
           <textarea value={form.description} onChange={set("description")} rows={5} maxLength={2000} required />
         </label>
+        <p className="actions">
+          <button type="button" className="btn small" onClick={generate} disabled={!form.repo_url || generating}>
+            {generating ? "Reading README…" : "Draft description from README (AI)"}
+          </button>
+        </p>
         {error && (
           <p className="form-error" role="alert">
             {error}
