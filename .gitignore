@@ -1,1 +1,17 @@
 .DS_Store
+Claude outputs/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.db
+
+# Secrets
+.env
+
+# Node
+node_modules/
+dist/
