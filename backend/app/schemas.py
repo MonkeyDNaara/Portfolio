@@ -17,6 +17,8 @@ class ProjectIn(BaseModel):
     repo_url: HttpUrl
     live_url: HttpUrl | None = None
     techs: list[str] = Field(default_factory=list, max_length=15)
+    featured: bool = False
+    is_published: bool = True
 
     @field_validator("title", "description")
     @classmethod
@@ -49,4 +51,12 @@ class ProjectOut(BaseModel):
     repo_url: str
     live_url: str | None
     created_at: datetime
+    featured: bool
+    is_published: bool
+    position: int
+    image_version: int | None
     techs: list[TechOut]
+
+
+class ReorderIn(BaseModel):
+    ids: list[int] = Field(min_length=1, max_length=200)

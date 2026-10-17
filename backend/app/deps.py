@@ -28,3 +28,16 @@ def get_current_user(
     if user is None:
         raise unauthorized
     return user
+
+
+def get_optional_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer),
+    db: Session = Depends(get_db),
+) -> models.User | None:
+    """Like get_current_user, but anonymous visitors (or bad tokens) just get None."""
+    if credentials is None:
+        return None
+    username = decode_access_token(credentials.credentials)
+    if username is None:
+        return None
+    return db.scalar(select(models.User).where(models.User.username == username))

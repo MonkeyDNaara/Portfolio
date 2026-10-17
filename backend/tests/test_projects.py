@@ -68,3 +68,51 @@ def test_list_returns_newest_first(client, auth_headers, project_payload):
         client.post("/projects", json={**project_payload, "title": title}, headers=auth_headers)
     titles = [p["title"] for p in client.get("/projects").json()]
     assert titles == ["third", "second", "first"]
+
+
+def _make(client, headers, payload, **overrides):
+    return client.post("/projects", json={**payload, **overrides}, headers=headers).json()
+
+
+def test_hidden_projects_are_only_visible_to_admin(client, auth_headers, project_payload):
+    visible = _make(client, auth_headers, project_payload, title="visible")
+    hidden = _make(client, auth_headers, project_payload, title="hidden", is_published=False)
+
+    public = [p["title"] for p in client.get("/projects").json()]
+    assert public == ["visible"]
+    assert client.get(f"/projects/{hidden['id']}").status_code == 404
+    assert client.get(f"/projects/{visible['id']}").status_code == 200
+
+    admin = [p["title"] for p in client.get("/projects", headers=auth_headers).json()]
+    assert admin == ["hidden", "visible"]
+    assert client.get(f"/projects/{hidden['id']}", headers=auth_headers).status_code == 200
+
+
+def test_featured_flag_roundtrip(client, auth_headers, project_payload):
+    created = _make(client, auth_headers, project_payload, featured=True)
+    assert created["featured"] is True
+    changed = {**project_payload, "featured": False}
+    res = client.put(f"/projects/{created['id']}", json=changed, headers=auth_headers)
+    assert res.json()["featured"] is False
+
+
+def test_new_projects_go_to_the_top(client, auth_headers, project_payload):
+    first = _make(client, auth_headers, project_payload, title="first")
+    second = _make(client, auth_headers, project_payload, title="second")
+    assert second["position"] < first["position"]
+
+
+def test_reorder(client, auth_headers, project_payload):
+    ids = [_make(client, auth_headers, project_payload, title=t)["id"] for t in "abc"]
+    new_order = [ids[0], ids[2], ids[1]]
+    res = client.post("/projects/reorder", json={"ids": new_order}, headers=auth_headers)
+    assert res.status_code == 204
+    assert [p["id"] for p in client.get("/projects").json()] == new_order
+
+
+def test_reorder_validation_and_auth(client, auth_headers, project_payload):
+    pid = _make(client, auth_headers, project_payload)["id"]
+    assert client.post("/projects/reorder", json={"ids": [pid]}).status_code == 401
+    assert client.post("/projects/reorder", json={"ids": [pid, pid]}, headers=auth_headers).status_code == 400
+    assert client.post("/projects/reorder", json={"ids": [pid, 999]}, headers=auth_headers).status_code == 404
+    assert client.post("/projects/reorder", json={"ids": []}, headers=auth_headers).status_code == 422

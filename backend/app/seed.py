@@ -12,17 +12,18 @@ from .database import SessionLocal
 
 GH = "https://github.com/MonkeyDNaara"
 
-# Newest first. Only used for ordering on the site.
+# In display order (first = top of the page). The list index becomes the position.
 PROJECTS = [
     {
         "title": "Portfolio",
         "description": (
             "This site. A full-stack portfolio with a FastAPI + PostgreSQL backend, JWT login "
-            "and a React frontend where I can add projects through an admin page. Tested with "
-            "pytest, built by GitHub Actions and planned through epics and issues."
+            "and a React frontend where I add, hide and reorder projects with buttons right on "
+            "the page. Tested with pytest, built by GitHub Actions and planned through epics and issues."
         ),
         "repo_url": f"{GH}/Portfolio",
         "techs": ["Python", "FastAPI", "PostgreSQL", "React", "JWT", "Docker", "GitHub Actions"],
+        "featured": True,
     },
     {
         "title": "MorgenMachIch",
@@ -34,6 +35,7 @@ PROJECTS = [
         "repo_url": f"{GH}/MorgenMachIch",
         "live_url": "https://morgenmachich.de",
         "techs": ["Next.js", "React", "TypeScript", "Tailwind", "DaisyUI", "Neon"],
+        "featured": True,
     },
     {
         "title": "byteMe",
@@ -45,6 +47,7 @@ PROJECTS = [
         "repo_url": f"{GH}/ByteMe",
         "live_url": "https://byteme-pb2e.onrender.com",
         "techs": ["Next.js", "React", "TypeScript", "Tailwind", "DaisyUI", "Neon"],
+        "featured": True,
     },
     {
         "title": "FilmFieber",
@@ -107,7 +110,7 @@ def seed(db: Session) -> int:
         exists = db.scalar(select(models.Project).where(models.Project.repo_url == item["repo_url"]))
         if exists:
             continue
-        project = models.Project(created_at=now - timedelta(seconds=i))
+        project = models.Project(created_at=now - timedelta(seconds=i), position=i)
         crud.apply_project_data(db, project, schemas.ProjectIn(**item))
         db.add(project)
         added += 1
