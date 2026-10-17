@@ -4,11 +4,12 @@ from sqlalchemy.orm import Session
 
 from .. import crud, models, schemas
 from ..database import get_db
+from ..deps import get_current_user
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
-# Write routes get `dependencies=[Depends(get_current_user)]` in the auth epic.
-WRITE_DEPS: list = []
+# Reading is public, every write needs a valid admin token.
+WRITE_DEPS = [Depends(get_current_user)]
 
 
 def _get_or_404(db: Session, project_id: int) -> models.Project:
