@@ -1,0 +1,41 @@
+# Render Blueprint: New > Blueprint > pick this repo.
+# Neon provides the database, paste its connection string into DATABASE_URL.
+services:
+  - type: web
+    name: portfolio-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
+    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: CORS_ORIGINS # URL of the static site below, e.g. https://portfolio-web.onrender.com
+        sync: false
+      - key: ANTHROPIC_API_KEY # optional, enables the AI description button
+        sync: false
+
+  - type: web
+    name: portfolio-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL # URL of the API service, e.g. https://portfolio-api.onrender.com
+        sync: false
