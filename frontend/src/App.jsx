@@ -1,14 +1,38 @@
 import { Route, Routes } from "react-router-dom";
 
-function Placeholder({ name }) {
-  return <main style={{ padding: 24, color: "var(--text)" }}>{name}</main>;
-}
+import Layout from "./components/Layout.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import About from "./pages/About.jsx";
+import Admin from "./pages/Admin.jsx";
+import Contact from "./pages/Contact.jsx";
+import Home from "./pages/Home.jsx";
+import Login from "./pages/Login.jsx";
+import NotFound from "./pages/NotFound.jsx";
+import ProjectDetail from "./pages/ProjectDetail.jsx";
+import Projects from "./pages/Projects.jsx";
+import Skills from "./pages/Skills.jsx";
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Placeholder name="Home" />} />
-      <Route path="*" element={<Placeholder name="Not found" />} />
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/skills" element={<Skills />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/projects/:id" element={<ProjectDetail />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<NotFound />} />
+      </Route>
     </Routes>
   );
 }
