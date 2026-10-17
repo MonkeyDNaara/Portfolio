@@ -1,9 +1,7 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import Layout from "./components/Layout.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import About from "./pages/About.jsx";
-import Admin from "./pages/Admin.jsx";
 import Contact from "./pages/Contact.jsx";
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
@@ -23,14 +21,7 @@ export default function App() {
         <Route path="/projects/:id" element={<ProjectDetail />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <Admin />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/admin" element={<Navigate to="/projects" replace />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

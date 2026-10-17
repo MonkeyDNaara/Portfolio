@@ -2,19 +2,24 @@
 
 [![CI](https://github.com/MonkeyDNaara/Portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/MonkeyDNaara/Portfolio/actions/workflows/ci.yml)
 
-My portfolio site, built as a small but complete full-stack project. It shows my other projects, and I can log in as admin to add, edit and delete them without touching the code. I came from industrial automation, so I wanted a project that shows the whole path: database, API, auth, frontend, tests, CI and deployment.
+My portfolio site, built as a small but complete full-stack project. My projects live in a PostgreSQL database (Neon), and when I'm logged in I can add, edit, hide, feature and reorder them with buttons right on the projects page, no code changes needed. I came from industrial automation, so I wanted a project that shows the whole path: database, API, auth, frontend, tests, CI and deployment.
 
 ![Home page](docs/screenshots/home.png)
 
-|  Projects (git-log style) | Admin page |
+| Projects as visitors see them | Same page when I'm logged in |
 | --- | --- |
-| ![Projects](docs/screenshots/projects.png) | ![Admin](docs/screenshots/admin.png) |
+| ![Projects](docs/screenshots/projects.png) | ![Owner view](docs/screenshots/owner.png) |
+
+![Edit form](docs/screenshots/form.png)
 
 ## What it does
 
 - Public pages: home, about, skills, projects list, project detail and contact
-- Admin login (JWT) and an admin page to add, edit and delete projects
+- Visitors only see published projects. Featured ones show up on the home page.
+- Owner login (JWT). When I'm logged in, the projects page shows an **+ Add project** button and controls on each card: edit, delete, hide/publish, feature and reorder (arrow buttons or drag and drop)
+- **Import from GitHub**: paste a repo URL and the title, description, live link and technologies are filled in from the GitHub API
 - Optional AI helper: drafts a project description from a repo's README using the Claude API, I always edit it before saving
+- Preview image per project. The browser scales it down, the API checks the file type by its bytes and stores it in Postgres.
 - Responsive layout, works on a phone too
 
 ## Tech stack
@@ -22,9 +27,9 @@ My portfolio site, built as a small but complete full-stack project. It shows my
 | Part | What I used |
 | --- | --- |
 | Backend | Python, FastAPI, SQLAlchemy 2, Alembic, PyJWT |
-| Database | PostgreSQL (Neon), SQLite for local dev and tests |
+| Database | PostgreSQL (Neon), SQLite for quick local dev and tests |
 | Frontend | React, Vite, React Router, plain CSS |
-| Quality | pytest (27 tests), ruff, GitHub Actions |
+| Quality | pytest (47 tests, run on SQLite and on Postgres), ruff, GitHub Actions |
 | Deployment | Docker / docker-compose, Render (see `render.yaml`) |
 
 ## How it fits together
@@ -37,7 +42,7 @@ flowchart LR
     Browser -- "Bearer JWT" --> API
 ```
 
-Reading projects is public. Everything that changes data (`POST`, `PUT`, `DELETE`, the AI endpoint) needs a valid token.
+Reading published projects is public. Everything that changes data (`POST`, `PUT`, `DELETE`, reordering, image upload, GitHub import and the AI endpoint) needs a valid token.
 
 ## Run it locally
 
@@ -55,7 +60,7 @@ python -m app.seed          # optional: adds my projects
 uvicorn app.main:app --reload
 ```
 
-The API docs are at <http://localhost:8000/docs>. The admin user is created on startup from `ADMIN_USERNAME` and `ADMIN_PASSWORD`.
+The API docs are at <http://localhost:8000/docs>. The owner account is created on startup from `ADMIN_USERNAME` and `ADMIN_PASSWORD`. Log in at `/login`, then the buttons appear on the projects page.
 
 **Frontend**
 
@@ -81,7 +86,13 @@ pytest -q
 ruff check .
 ```
 
-The tests cover login, token handling, protected routes, validation, CRUD, the seed script and the AI endpoint (with GitHub and Claude mocked). CI runs the same checks plus the frontend build on every pull request.
+The tests cover login, token handling, protected routes, validation, CRUD, hiding, ordering, image upload, the seed script, the GitHub import and the AI endpoint (with GitHub and Claude mocked). To run them against Postgres too:
+
+```bash
+TEST_DATABASE_URL=postgresql://user:pass@localhost:5432/portfolio_test pytest -q
+```
+
+CI runs ruff and the tests on SQLite and on a Postgres service, plus the frontend build, on every pull request.
 
 ## Deployment
 
@@ -100,6 +111,9 @@ The free Render tier goes to sleep, so the first request after a while can take 
 - **JWT in `localStorage`** is simple but readable by injected scripts. For a single-admin portfolio I accepted that. For something bigger I would use an httpOnly cookie.
 - **Secrets** only come from environment variables, `.env` is git-ignored.
 - **The AI endpoint** only returns a draft and never saves anything. The README is treated as untrusted input in the prompt.
+- **Images are stored in Postgres** (a separate table, so listing projects never loads them). That keeps the setup to one database with nothing extra to configure. It is fine for a handful of screenshots, for lots of images I would switch to object storage.
+- **Uploads** are limited to 1 MB and checked by their magic bytes (PNG, JPEG, WebP), not by file name.
+- **Drag and drop has arrow buttons as an alternative**, so reordering also works with a keyboard.
 
 ## What I would do next
 

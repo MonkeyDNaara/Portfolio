@@ -18,7 +18,8 @@ function formatDetail(detail) {
 
 export async function api(path, { method = "GET", body, token } = {}) {
   const headers = {};
-  if (body !== undefined) headers["Content-Type"] = "application/json";
+  const isForm = body instanceof FormData;
+  if (body !== undefined && !isForm) headers["Content-Type"] = "application/json";
   if (token) headers.Authorization = `Bearer ${token}`;
 
   let res;
@@ -26,7 +27,7 @@ export async function api(path, { method = "GET", body, token } = {}) {
     res = await fetch(`${API_URL}${path}`, {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
     });
   } catch {
     throw new ApiError(0, "Can't reach the API. The free-tier server may be waking up, try again in about 30 seconds.");
@@ -36,4 +37,10 @@ export async function api(path, { method = "GET", body, token } = {}) {
   const data = await res.json().catch(() => null);
   if (!res.ok) throw new ApiError(res.status, formatDetail(data?.detail));
   return data;
+}
+
+// Public image URL of a project, or null. `?v=` changes on every upload so browsers refetch.
+export function imageUrl(project) {
+  if (!project.image_version || !project.is_published) return null;
+  return `${API_URL}/projects/${project.id}/image?v=${project.image_version}`;
 }

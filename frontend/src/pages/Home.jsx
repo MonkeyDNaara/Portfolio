@@ -1,8 +1,13 @@
 import { Link } from "react-router-dom";
 
+import ProjectCard from "../components/ProjectCard.jsx";
 import { profile } from "../data/profile.js";
+import useProjects from "../useProjects.js";
 
 export default function Home() {
+  const { projects } = useProjects();
+  const featured = (projects || []).filter((p) => p.featured).slice(0, 3);
+
   return (
     <section>
       <pre className="terminal" aria-label="Introduction">
@@ -29,6 +34,18 @@ export default function Home() {
           Get in touch
         </Link>
       </p>
+
+      {featured.length > 0 && (
+        <>
+          <h2>Featured projects</h2>
+          {featured.map((p) => (
+            <ProjectCard key={p.id} project={p} />
+          ))}
+          <p>
+            <Link to="/projects">All projects →</Link>
+          </p>
+        </>
+      )}
     </section>
   );
 }

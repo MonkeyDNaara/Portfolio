@@ -12,7 +12,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
-  if (token) return <Navigate to="/admin" replace />;
+  if (token) return <Navigate to="/projects" replace />;
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -20,7 +20,7 @@ export default function Login() {
     setError("");
     try {
       await login(username, password);
-      navigate(location.state?.from || "/admin", { replace: true });
+      navigate(location.state?.from || "/projects", { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -31,7 +31,7 @@ export default function Login() {
   return (
     <section>
       <h1>Admin login</h1>
-      <p className="muted">Only I can add, edit or delete projects.</p>
+      <p className="muted">Only I can add, edit or delete projects. Visitors don't need to log in.</p>
       <form className="form narrow" onSubmit={onSubmit}>
         <label>
           Username

@@ -15,7 +15,6 @@ function tabName(pathname) {
   if (pathname.startsWith("/projects/")) return "project.md";
   const hit = FILES.find((f) => (f.end ? pathname === f.to : pathname.startsWith(f.to)));
   if (hit) return hit.label;
-  if (pathname.startsWith("/admin")) return "admin.config";
   if (pathname.startsWith("/login")) return "login.sh";
   return "404.txt";
 }
@@ -51,16 +50,11 @@ export default function Layout() {
           </ul>
           <ul className="sidebar-bottom">
             {token ? (
-              <>
-                <li>
-                  <NavLink to="/admin">admin.config</NavLink>
-                </li>
-                <li>
-                  <button className="linklike" onClick={logout}>
-                    logout
-                  </button>
-                </li>
-              </>
+              <li>
+                <button className="linklike" onClick={logout}>
+                  logout
+                </button>
+              </li>
             ) : (
               <li>
                 <NavLink to="/login">login.sh</NavLink>

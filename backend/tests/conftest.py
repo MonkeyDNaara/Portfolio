@@ -18,13 +18,20 @@ from app.main import app  # noqa: E402
 from app.users import ensure_admin  # noqa: E402
 
 ADMIN_PASSWORD = "correct-horse-battery"
+# SQLite in memory by default. Set TEST_DATABASE_URL to run the same tests against Postgres.
+TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL", "sqlite://")
 
 
 @pytest.fixture()
 def db():
-    engine = create_engine(
-        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
-    )
+    if TEST_DATABASE_URL.startswith("sqlite"):
+        engine = create_engine(
+            TEST_DATABASE_URL, connect_args={"check_same_thread": False}, poolclass=StaticPool
+        )
+    else:
+        url = TEST_DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
+        engine = create_engine(url)
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     session = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)()
     yield session
