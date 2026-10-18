@@ -4,13 +4,19 @@
 
 My portfolio site, built as a small but complete full-stack project. My projects live in a PostgreSQL database (Neon), and when I'm logged in I can add, edit, hide, feature and reorder them with buttons right on the projects page, no code changes needed. I came from industrial automation, so I wanted a project that shows the whole path: database, API, auth, frontend, tests, CI and deployment.
 
-![Home page](docs/screenshots/home.png)
+![Home page in dark mode](docs/screenshots/home.png)
+
+| Light mode | About page in German |
+| --- | --- |
+| ![Home page in light mode](docs/screenshots/home-light.png) | ![About page in German](docs/screenshots/about.png) |
 
 | Projects as visitors see them | Same page when I'm logged in |
 | --- | --- |
 | ![Projects](docs/screenshots/projects.png) | ![Owner view](docs/screenshots/owner.png) |
 
-![Edit form](docs/screenshots/form.png)
+| Edit dialog with the German tab | Phone |
+| --- | --- |
+| ![Edit form](docs/screenshots/form.png) | <img src="docs/screenshots/mobile.png" alt="Home page on a phone" width="260"> |
 
 ## What it does
 
@@ -20,7 +26,15 @@ My portfolio site, built as a small but complete full-stack project. My projects
 - **Import from GitHub**: paste a repo URL and the title, description, live link and technologies are filled in from the GitHub API
 - Optional AI helper: drafts a project description from a repo's README using the Claude API, I always edit it before saving
 - Preview image per project. The browser scales it down, the API checks the file type by its bytes and stores it in Postgres.
+- **German / English** toggle for all texts. Projects can have an optional German title and description, otherwise the English one is shown.
+- **Light and dark mode**, follows the system setting and remembers my choice
 - Responsive layout, works on a phone too
+
+## Design
+
+My first version looked like a code editor, with a file tree, a fake terminal and fake commit hashes. Lots of developer portfolios look like that, and it didn't say anything about me. The new one is calmer: dark first, one emerald accent, and the only other colors are the brand dots on the tech badges, so you can see at a glance what each project was built with.
+
+On the home page the three layers of this project (PostgreSQL, FastAPI, React) are drawn as a small 3D stack that spreads apart when you hover over it. The about page tells my path from BMW apprentice to developer as a timeline. Cards tilt a little on hover; that's turned off on touch screens and when "reduce motion" is set. No UI library: plain CSS with custom properties, about 15 kB.
 
 ## Tech stack
 
@@ -28,8 +42,8 @@ My portfolio site, built as a small but complete full-stack project. My projects
 | --- | --- |
 | Backend | Python, FastAPI, SQLAlchemy 2, Alembic, PyJWT |
 | Database | PostgreSQL (Neon), SQLite for quick local dev and tests |
-| Frontend | React, Vite, React Router, plain CSS |
-| Quality | pytest (47 tests, run on SQLite and on Postgres), ruff, GitHub Actions |
+| Frontend | React, Vite, React Router, plain CSS, small self-made i18n (no library) |
+| Quality | pytest (51 tests, run on SQLite and on Postgres), ruff, GitHub Actions |
 | Deployment | Docker / docker-compose, Render (see `render.yaml`) |
 
 ## How it fits together
