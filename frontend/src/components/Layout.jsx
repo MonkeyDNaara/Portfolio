@@ -71,8 +71,8 @@ export default function Layout() {
           © {new Date().getFullYear()} {profile.name} · {t("footer.builtWith")}
         </span>
         <span className="meta">
-          <a href={`${profile.repo}/commit/${BUILD}`} target="_blank" rel="noreferrer">
-            {t("footer.build")} {BUILD}
+          <a className="build" href={`${profile.repo}/commit/${BUILD}`} target="_blank" rel="noreferrer" title={t("footer.build")}>
+            v {BUILD}
           </a>
           {token ? (
             <button className="linklike" onClick={logout}>

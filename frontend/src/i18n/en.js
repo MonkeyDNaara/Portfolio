@@ -13,7 +13,7 @@ const en = {
   },
   footer: {
     builtWith: "built with FastAPI, PostgreSQL & React",
-    build: "build",
+    build: "Version of the code that is running (git commit)",
     login: "Login",
     logout: "Logout",
   },
@@ -30,8 +30,8 @@ const en = {
     stackLabel: "My stack in three layers: PostgreSQL database, FastAPI back end, React front end",
     availability: [
       { label: "open to work", text: "8-week internship from 01/2027, remote" },
-      { label: "from 04/2027", text: "Junior back-end or full-stack role" },
-      { label: "works in", text: "German & English, remote-first" },
+      { label: "from 04/2027", text: "Junior back-end or full-stack role, remote-first" },
+      { label: "languages", text: "German (native) & English (B2)" },
     ],
     selected: "Selected work",
     allProjects: "All projects →",

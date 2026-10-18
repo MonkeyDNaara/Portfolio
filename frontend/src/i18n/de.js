@@ -13,7 +13,7 @@ const de = {
   },
   footer: {
     builtWith: "gebaut mit FastAPI, PostgreSQL & React",
-    build: "build",
+    build: "Version des laufenden Codes (git commit)",
     login: "Login",
     logout: "Logout",
   },
@@ -30,8 +30,8 @@ const de = {
     stackLabel: "Mein Stack in drei Schichten: PostgreSQL-Datenbank, FastAPI-Back-end, React-Front-end",
     availability: [
       { label: "offen für", text: "8-wöchiges Praktikum ab 01/2027, remote" },
-      { label: "ab 04/2027", text: "Junior-Stelle im Back-end oder Full-Stack" },
-      { label: "Sprachen", text: "Deutsch & Englisch, remote-first" },
+      { label: "ab 04/2027", text: "Junior-Stelle im Back-end oder Full-Stack, remote-first" },
+      { label: "Sprachen", text: "Deutsch (Muttersprache) & Englisch (B2)" },
     ],
     selected: "Ausgewählte Projekte",
     allProjects: "Alle Projekte →",
