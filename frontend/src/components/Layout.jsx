@@ -1,76 +1,88 @@
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 
 import { useAuth } from "../auth.jsx";
 import { profile } from "../data/profile.js";
+import { useLanguage } from "../i18n/LanguageProvider.jsx";
+import { useTheme } from "../theme/ThemeProvider.jsx";
+import { Moon, Sun } from "./Icons.jsx";
 
-const FILES = [
-  { to: "/", label: "home.md", end: true },
-  { to: "/about", label: "about.md" },
-  { to: "/skills", label: "skills.json" },
-  { to: "/projects", label: "projects/" },
-  { to: "/contact", label: "contact.sh" },
+const LINKS = [
+  { to: "/projects", key: "nav.work" },
+  { to: "/about", key: "nav.about" },
+  { to: "/skills", key: "nav.skills" },
+  { to: "/contact", key: "nav.contact" },
 ];
 
-function tabName(pathname) {
-  if (pathname.startsWith("/projects/")) return "project.md";
-  const hit = FILES.find((f) => (f.end ? pathname === f.to : pathname.startsWith(f.to)));
-  if (hit) return hit.label;
-  if (pathname.startsWith("/login")) return "login.sh";
-  return "404.txt";
-}
+/* global __BUILD_COMMIT__ */
+const BUILD = typeof __BUILD_COMMIT__ === "string" ? __BUILD_COMMIT__ : "dev";
 
 export default function Layout() {
   const { token, logout } = useAuth();
+  const { lang, setLang, t } = useLanguage();
+  const { theme, toggle } = useTheme();
   const { pathname } = useLocation();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   return (
-    <div className="app">
+    <>
       <a className="skip" href="#content">
-        Skip to content
+        {t("nav.skip")}
       </a>
-      <header className="titlebar">
-        <span className="dots" aria-hidden="true">
-          <i style={{ background: "#e07a7a" }} />
-          <i style={{ background: "#e9c46a" }} />
-          <i style={{ background: "#7bc47f" }} />
-        </span>
-        <span>{profile.name.toLowerCase().replace(" ", "-")} — portfolio</span>
-      </header>
-      <div className="workspace">
-        <nav className="sidebar" aria-label="Main">
-          <p className="sidebar-title">EXPLORER</p>
+      <header className="site-header wrap">
+        <Link className="logo" to="/">
+          <span className="logo-mark" aria-hidden="true">
+            {profile.initials}
+          </span>
+          {profile.name}
+        </Link>
+        <nav className="nav card" aria-label={t("nav.main")}>
           <ul>
-            {FILES.map((f) => (
-              <li key={f.to}>
-                <NavLink to={f.to} end={f.end}>
-                  {f.label}
-                </NavLink>
+            {LINKS.map((l) => (
+              <li key={l.to}>
+                <NavLink to={l.to}>{t(l.key)}</NavLink>
               </li>
             ))}
           </ul>
-          <ul className="sidebar-bottom">
-            {token ? (
-              <li>
-                <button className="linklike" onClick={logout}>
-                  logout
-                </button>
-              </li>
-            ) : (
-              <li>
-                <NavLink to="/login">login.sh</NavLink>
-              </li>
-            )}
-          </ul>
+          <span className="nav-sep" aria-hidden="true" />
+          <button
+            className="icon-btn"
+            onClick={() => setLang(lang === "en" ? "de" : "en")}
+            aria-label={t("nav.switchLang")}
+            lang={lang === "en" ? "de" : "en"}
+          >
+            {lang === "en" ? "DE" : "EN"}
+          </button>
+          <button className="icon-btn" onClick={toggle} aria-label={theme === "dark" ? t("nav.toLight") : t("nav.toDark")}>
+            {theme === "dark" ? <Sun /> : <Moon />}
+          </button>
         </nav>
-        <div className="editor">
-          <div className="tabs">
-            <span className="tab">{tabName(pathname)}</span>
-          </div>
-          <main id="content" className="content">
-            <Outlet />
-          </main>
-        </div>
-      </div>
-    </div>
+      </header>
+
+      <main id="content" className="wrap">
+        <Outlet />
+      </main>
+
+      <footer className="site-footer wrap">
+        <span>
+          © {new Date().getFullYear()} {profile.name} · {t("footer.builtWith")}
+        </span>
+        <span className="meta">
+          <a href={`${profile.repo}/commit/${BUILD}`} target="_blank" rel="noreferrer">
+            {t("footer.build")} {BUILD}
+          </a>
+          {token ? (
+            <button className="linklike" onClick={logout}>
+              {t("footer.logout")}
+            </button>
+          ) : (
+            <Link to="/login">{t("footer.login")}</Link>
+          )}
+        </span>
+      </footer>
+    </>
   );
 }
