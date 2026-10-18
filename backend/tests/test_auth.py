@@ -73,3 +73,19 @@ def test_ensure_admin_is_idempotent_and_needs_password(db):
     assert ensure_admin(db, "admin", ADMIN_PASSWORD) is True
     assert ensure_admin(db, "admin", "changed") is False
     assert len(db.scalars(select(models.User)).all()) == 1
+
+
+def test_set_admin_password_creates_then_resets(client, db):
+    from app.users import set_admin_password
+
+    def login(password):
+        body = {"username": "admin", "password": password}
+        return client.post("/auth/login", json=body).status_code
+
+    assert set_admin_password(db, "admin", "first-password") == "created"
+    assert login("first-password") == 200
+
+    assert set_admin_password(db, "admin", "second-password") == "updated"
+    assert login("first-password") == 401
+    assert login("second-password") == 200
+    assert len(db.scalars(select(models.User)).all()) == 1

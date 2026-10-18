@@ -1,8 +1,11 @@
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import func, select
 
+from . import models
 from .config import get_settings
 from .database import SessionLocal
 from .routers import ai, auth, github, images, projects
@@ -13,8 +16,15 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     # Create the admin user from ADMIN_USERNAME / ADMIN_PASSWORD on first start.
+    log = logging.getLogger("uvicorn.error")
     with SessionLocal() as db:
-        ensure_admin(db, settings.admin_username, settings.admin_password)
+        if ensure_admin(db, settings.admin_username, settings.admin_password):
+            log.info("Owner account '%s' created.", settings.admin_username)
+        if db.scalar(select(func.count()).select_from(models.User)) == 0:
+            log.warning(
+                "No owner account exists, so nobody can log in. Set ADMIN_PASSWORD in backend/.env "
+                "and restart, or run: python -m app.create_admin"
+            )
     yield
 
 

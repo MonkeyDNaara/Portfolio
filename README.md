@@ -60,7 +60,7 @@ python -m app.seed          # optional: adds my projects
 uvicorn app.main:app --reload
 ```
 
-The API docs are at <http://localhost:8000/docs>. The owner account is created on startup from `ADMIN_USERNAME` and `ADMIN_PASSWORD`. Log in at `/login`, then the buttons appear on the projects page.
+The API docs are at <http://localhost:8000/docs>. The owner account is created on startup from `ADMIN_USERNAME` and `ADMIN_PASSWORD`. Log in at `/login`, then the buttons appear on the projects page. If no account exists (for example because `ADMIN_PASSWORD` was empty on the first start), run `python -m app.create_admin` to create it or to reset the password.
 
 **Frontend**
 
