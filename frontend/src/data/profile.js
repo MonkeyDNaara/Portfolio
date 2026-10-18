@@ -1,24 +1,74 @@
-// Edit this file to change the static texts of the site.
+// Static data that is the same in both languages. Texts live in src/i18n/en.js and de.js.
 export const profile = {
   name: "Niko Klam",
-  title: "Junior full-stack developer",
-  tagline: "Career changer from industrial automation, building with Python, FastAPI and React.",
-  email: "naara21@hotmail.de",
+  initials: "NK",
+  email: "niko.klam@yahoo.com",
   github: "https://github.com/MonkeyDNaara",
-  // Fill these in and they show up on the Contact page automatically.
-  linkedin: "",
+  linkedin: "https://www.linkedin.com/in/niko-klam/",
+  // Path or URL of the CV PDF. Empty = the link is hidden.
   resume: "",
-  about: [
-    "Hi, I'm Niko. I spent more than two years as an automation technician in mechanical engineering: PLC programming with Siemens TIA Portal (SCL), functional safety, visualizations for manufacturing systems, a bit of SAP ERP/BW and some experience in manufacturing leadership.",
-    "Now I'm retraining as a software developer at WBS Coding School (Software Engineering & AI). I'm looking for a junior position in back-end or full-stack development, ideally fully remote.",
-    "From automation I bring a habit of thinking in systems, caring about reliability and debugging patiently. Python is my main language. I hold the PCEP certification and practice on LeetCode regularly. I work in German and English.",
-  ],
+  repo: "https://github.com/MonkeyDNaara/Portfolio",
 };
 
+// used = used in a real project or at work, learning = in the WBS course right now
 export const skillGroups = [
-  { name: "Back-end", items: ["Python", "FastAPI", "SQLAlchemy", "Alembic", "PostgreSQL", "JWT auth", "pytest"] },
-  { name: "Front-end", items: ["React", "Vite", "JavaScript", "TypeScript", "Next.js", "HTML5", "CSS3", "Tailwind CSS"] },
-  { name: "DevOps & tools", items: ["Git & GitHub", "GitHub Actions", "Docker", "Render", "Neon"] },
-  { name: "AI", items: ["Claude API", "AI-assisted development"] },
-  { name: "Industrial background", items: ["Siemens TIA Portal", "SCL", "Functional safety", "SAP ERP/BW", "Visualization programming"] },
+  {
+    key: "backend",
+    items: [
+      ["Python", "used"],
+      ["FastAPI", "used"],
+      ["SQLAlchemy & Alembic", "used"],
+      ["PostgreSQL", "used"],
+      ["REST APIs", "used"],
+      ["JWT auth", "used"],
+      ["pytest", "used"],
+      ["Drizzle ORM", "used"],
+      ["Flask", "learning"],
+      ["C# / .NET", "learning"],
+      ["MongoDB", "learning"],
+    ],
+  },
+  {
+    key: "frontend",
+    items: [
+      ["React", "used"],
+      ["Next.js", "used"],
+      ["TypeScript", "used"],
+      ["JavaScript", "used"],
+      ["HTML & CSS", "used"],
+      ["Tailwind CSS", "used"],
+      ["Vite", "used"],
+      ["PWA", "used"],
+      ["Vitest", "used"],
+    ],
+  },
+  {
+    key: "devops",
+    items: [
+      ["Git & GitHub", "used"],
+      ["GitHub Actions", "used"],
+      ["Render", "used"],
+      ["Neon", "used"],
+      ["Docker", "learning"],
+      ["Azure (AZ-900)", "learning"],
+    ],
+  },
+  {
+    key: "ai",
+    items: [
+      ["Claude API", "used"],
+      ["AI-assisted development", "used"],
+      ["Prompt engineering", "used"],
+    ],
+  },
+  {
+    key: "industry",
+    items: [
+      ["Siemens TIA Portal (SCL)", "used"],
+      ["Functional safety (EN 62061)", "used"],
+      ["SAP", "used"],
+      ["Scrum", "used"],
+      ["Leading a team of 10+", "used"],
+    ],
+  },
 ];
