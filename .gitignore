@@ -1,5 +1,6 @@
 .DS_Store
 Claude outputs/
+.env
 
 # Python
 __pycache__/
