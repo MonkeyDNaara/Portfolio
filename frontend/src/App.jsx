@@ -22,6 +22,8 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<Navigate to="/projects" replace />} />
+        {/* if the host ever redirects to /index.html instead of rewriting, still show the home page */}
+        <Route path="/index.html" element={<Navigate to="/" replace />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
