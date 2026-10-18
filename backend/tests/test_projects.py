@@ -116,3 +116,27 @@ def test_reorder_validation_and_auth(client, auth_headers, project_payload):
     assert client.post("/projects/reorder", json={"ids": [pid, pid]}, headers=auth_headers).status_code == 400
     assert client.post("/projects/reorder", json={"ids": [pid, 999]}, headers=auth_headers).status_code == 404
     assert client.post("/projects/reorder", json={"ids": []}, headers=auth_headers).status_code == 422
+
+
+def test_german_texts_are_optional(client, auth_headers, project_payload):
+    body = client.post("/projects", json=project_payload, headers=auth_headers).json()
+    assert body["title_de"] is None
+    assert body["description_de"] is None
+
+
+def test_german_texts_are_saved_and_blank_means_none(client, auth_headers, project_payload):
+    payload = {**project_payload, "title_de": " Testprojekt ", "description_de": "Auf Deutsch."}
+    pid = client.post("/projects", json=payload, headers=auth_headers).json()["id"]
+    body = client.get(f"/projects/{pid}").json()
+    assert body["title_de"] == "Testprojekt"
+    assert body["description_de"] == "Auf Deutsch."
+
+    cleared = {**payload, "title_de": "   ", "description_de": ""}
+    body = client.put(f"/projects/{pid}", json=cleared, headers=auth_headers).json()
+    assert body["title_de"] is None
+    assert body["description_de"] is None
+
+
+def test_german_text_length_limit(client, auth_headers, project_payload):
+    too_long = {**project_payload, "description_de": "x" * 2001}
+    assert client.post("/projects", json=too_long, headers=auth_headers).status_code == 422

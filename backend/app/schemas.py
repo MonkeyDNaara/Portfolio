@@ -14,6 +14,8 @@ class TechOut(BaseModel):
 class ProjectIn(BaseModel):
     title: str = Field(min_length=1, max_length=120)
     description: str = Field(min_length=1, max_length=2000)
+    title_de: str | None = Field(default=None, max_length=120)
+    description_de: str | None = Field(default=None, max_length=2000)
     repo_url: HttpUrl
     live_url: HttpUrl | None = None
     techs: list[str] = Field(default_factory=list, max_length=15)
@@ -27,6 +29,12 @@ class ProjectIn(BaseModel):
         if not v:
             raise ValueError("must not be blank")
         return v
+
+    @field_validator("title_de", "description_de")
+    @classmethod
+    def blank_to_none(cls, v: str | None) -> str | None:
+        v = (v or "").strip()
+        return v or None
 
     @field_validator("techs")
     @classmethod
@@ -48,6 +56,8 @@ class ProjectOut(BaseModel):
     id: int
     title: str
     description: str
+    title_de: str | None
+    description_de: str | None
     repo_url: str
     live_url: str | None
     created_at: datetime
