@@ -2,6 +2,10 @@
 
 [![CI](https://github.com/MonkeyDNaara/Portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/MonkeyDNaara/Portfolio/actions/workflows/ci.yml)
 
+**Live:** [portfolio-web-pepm.onrender.com](https://portfolio-web-pepm.onrender.com) · **API docs:** [portfolio-api-u2j6.onrender.com/docs](https://portfolio-api-u2j6.onrender.com/docs)
+
+> Free Render tier: the API sleeps after a while, so the first request can take about 30 seconds.
+
 My portfolio site, built as a small but complete full-stack project. My projects live in a PostgreSQL database (Neon), and when I'm logged in I can add, edit, hide, feature and reorder them with buttons right on the projects page, no code changes needed. I came from industrial automation, so I wanted a project that shows the whole path: database, API, auth, frontend, tests, CI and deployment.
 
 ![Home page in dark mode](docs/screenshots/home.png)
@@ -112,7 +116,13 @@ CI runs ruff and the tests on SQLite and on a Postgres service, plus the fronten
 
 ## Deployment
 
-`render.yaml` describes two Render services (API and static site). The database is a Neon Postgres. Steps:
+The live site runs on Render (Frankfurt, free tier) with a Neon Postgres in eu-central-1:
+
+- `portfolio-api`: Python web service. Build `cd backend && pip install -r requirements.txt`, start `cd backend && alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT`, so every deploy runs the migrations first.
+- `portfolio-web`: static site. Build `cd frontend && npm ci && npm run build`, publish `frontend/dist`, plus a rewrite rule `/*` → `/index.html` so React Router can handle reloads on any page.
+- Both deploy automatically on every push to `main`. The owner account is created at startup from `ADMIN_USERNAME` / `ADMIN_PASSWORD`.
+
+`render.yaml` describes the same two services as a Blueprint if you want to set it up yourself. Steps:
 
 1. Create a Neon project and copy the connection string.
 2. On Render, create a Blueprint from this repo and fill in `DATABASE_URL`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `CORS_ORIGINS` (the frontend URL) and `VITE_API_URL` (the API URL).
