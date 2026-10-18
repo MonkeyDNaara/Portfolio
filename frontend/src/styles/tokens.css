@@ -1,0 +1,15 @@
+/* Ocean Depths theme */
+:root {
+  --bg: #1a2332;
+  --bg-elevated: #212d40;
+  --bg-sidebar: #162030;
+  --border: #2f3f57;
+  --primary: #2d8b8b;
+  --secondary: #a8dadc;
+  --text: #f1faee;
+  --text-muted: #9fb3c8;
+  --danger: #e07a7a;
+  --radius: 8px;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-sans: "DejaVu Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
