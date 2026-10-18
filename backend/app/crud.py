@@ -21,6 +21,8 @@ def resolve_techs(db: Session, names: list[str]) -> list[models.Tech]:
 def apply_project_data(db: Session, project: models.Project, data: schemas.ProjectIn) -> None:
     project.title = data.title
     project.description = data.description
+    project.title_de = data.title_de
+    project.description_de = data.description_de
     project.repo_url = str(data.repo_url)
     project.live_url = str(data.live_url) if data.live_url else None
     project.featured = data.featured

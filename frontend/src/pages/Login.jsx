@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../auth.jsx";
+import { useLanguage } from "../i18n/LanguageProvider.jsx";
 
 export default function Login() {
   const { token, login } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const [username, setUsername] = useState("");
@@ -29,16 +31,17 @@ export default function Login() {
   }
 
   return (
-    <section>
-      <h1>Admin login</h1>
-      <p className="muted">Only I can add, edit or delete projects. Visitors don't need to log in.</p>
-      <form className="form narrow" onSubmit={onSubmit}>
+    <section className="card login">
+      <span className="tag">// login</span>
+      <h1>{t("login.title")}</h1>
+      <p className="muted">{t("login.lead")}</p>
+      <form className="form" onSubmit={onSubmit}>
         <label>
-          Username
+          {t("login.username")}
           <input value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" required />
         </label>
         <label>
-          Password
+          {t("login.password")}
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required />
         </label>
         {error && (
@@ -47,7 +50,7 @@ export default function Login() {
           </p>
         )}
         <button className="btn primary" disabled={busy}>
-          {busy ? "Signing in…" : "Sign in"}
+          {busy ? t("login.busy") : t("login.submit")}
         </button>
       </form>
     </section>

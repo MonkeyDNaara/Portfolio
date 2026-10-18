@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 
 import { api, imageUrl } from "../api.js";
+import { useLanguage } from "../i18n/LanguageProvider.jsx";
 import { resizeImage } from "../imageResize.js";
 
-const EMPTY = { title: "", description: "", repo_url: "", live_url: "", techs: "", featured: false, is_published: true };
+const EMPTY = { title: "", description: "", title_de: "", description_de: "", repo_url: "", live_url: "", techs: "", featured: false, is_published: true };
 
 function fromProject(p) {
   return {
     title: p.title,
     description: p.description,
+    title_de: p.title_de || "",
+    description_de: p.description_de || "",
     repo_url: p.repo_url,
     live_url: p.live_url || "",
     techs: p.techs.map((t) => t.name).join(", "),
@@ -19,7 +22,9 @@ function fromProject(p) {
 
 /** Modal form to add (project = null) or edit a project. */
 export default function ProjectForm({ project, token, onSaved, onClose, onUnauthorized }) {
+  const { t } = useLanguage();
   const dialog = useRef(null);
+  const [textLang, setTextLang] = useState("en"); // which language tab of title/description is open
   const fileInput = useRef(null);
   const [form, setForm] = useState(project ? fromProject(project) : EMPTY);
   const [savedId, setSavedId] = useState(project?.id ?? null);
@@ -69,14 +74,14 @@ export default function ProjectForm({ project, token, onSaved, onClose, onUnauth
         live_url: data.live_url || f.live_url,
         techs: data.techs.length ? data.techs.join(", ") : f.techs,
       }));
-      setInfo("Imported from GitHub. Check the fields and adjust them.");
+      setInfo(t("form.imported"));
     });
 
   const draftDescription = () =>
     run("ai", async () => {
       const data = await api("/ai/generate-description", { method: "POST", body: { repo_url: form.repo_url }, token });
       setForm((f) => ({ ...f, description: data.description }));
-      setInfo("Draft added. Read it and edit it before saving.");
+      setInfo(t("form.drafted"));
     });
 
   async function pickImage(e) {
@@ -106,6 +111,8 @@ export default function ProjectForm({ project, token, onSaved, onClose, onUnauth
       const body = {
         title: form.title,
         description: form.description,
+        title_de: form.title_de.trim() || null,
+        description_de: form.description_de.trim() || null,
         repo_url: form.repo_url,
         live_url: form.live_url.trim() || null,
         techs: form.techs.split(",").map((t) => t.trim()).filter(Boolean),
@@ -125,57 +132,91 @@ export default function ProjectForm({ project, token, onSaved, onClose, onUnauth
       } else if (removeImage && saved.image_version) {
         await api(`/projects/${saved.id}/image`, { method: "DELETE", token });
       }
-      onSaved(project ? "Project updated." : "Project added.");
+      onSaved(project ? t("projects.updated") : t("projects.added"));
     });
   }
 
   const hasRepo = form.repo_url.trim().length > 0;
 
+  const de = textLang === "de";
+
   return (
     <dialog ref={dialog} className="modal" onClose={onClose} aria-labelledby="form-title">
       <form className="form" onSubmit={onSubmit}>
-        <h2 id="form-title">{project ? "Edit project" : "Add project"}</h2>
+        <h2 id="form-title">{project ? t("form.editTitle") : t("form.addTitle")}</h2>
 
         <label>
-          GitHub repo URL
+          {t("form.repo")}
           <input type="url" value={form.repo_url} onChange={set("repo_url")} placeholder="https://github.com/MonkeyDNaara/..." required />
         </label>
         <p className="actions tight">
           <button type="button" className="btn small" onClick={importFromGithub} disabled={!hasRepo || !!busy}>
-            {busy === "import" ? "Importing…" : "Import from GitHub"}
+            {busy === "import" ? t("form.importing") : t("form.import")}
           </button>
           <button type="button" className="btn small" onClick={draftDescription} disabled={!hasRepo || !!busy}>
-            {busy === "ai" ? "Reading README…" : "Draft description (AI)"}
+            {busy === "ai" ? t("form.drafting") : t("form.draft")}
           </button>
         </p>
 
+        <div className="lang-tabs" role="tablist" aria-label={t("form.language")}>
+          {["en", "de"].map((l) => (
+            <button
+              key={l}
+              type="button"
+              role="tab"
+              id={`tab-${l}`}
+              aria-selected={textLang === l}
+              aria-controls="text-fields"
+              onClick={() => setTextLang(l)}
+            >
+              {l.toUpperCase()}
+            </button>
+          ))}
+        </div>
+        {/* Both languages stay in the DOM, so the browser still checks the required English fields. */}
+        <div id="text-fields" role="tabpanel" aria-labelledby={`tab-${textLang}`} className="form">
+          <div className="form" hidden={de}>
+            <label>
+              {t("form.title")} (EN)
+              <input value={form.title} onChange={set("title")} onInvalid={() => setTextLang("en")} maxLength={120} required />
+            </label>
+            <label>
+              {t("form.description")} (EN)
+              <textarea value={form.description} onChange={set("description")} onInvalid={() => setTextLang("en")} rows={5} maxLength={2000} required />
+            </label>
+          </div>
+          <div className="form" hidden={!de}>
+            <p className="hint">{t("form.germanHint")}</p>
+            <label>
+              {t("form.title")} (DE)
+              <input value={form.title_de} onChange={set("title_de")} maxLength={120} lang="de" />
+            </label>
+            <label>
+              {t("form.description")} (DE)
+              <textarea value={form.description_de} onChange={set("description_de")} rows={5} maxLength={2000} lang="de" />
+            </label>
+          </div>
+        </div>
+
         <label>
-          Title
-          <input value={form.title} onChange={set("title")} maxLength={120} required />
-        </label>
-        <label>
-          Live demo URL (optional)
+          {t("form.live")}
           <input type="url" value={form.live_url} onChange={set("live_url")} />
         </label>
         <label>
-          Technologies (comma separated)
+          {t("form.techs")}
           <input value={form.techs} onChange={set("techs")} placeholder="Python, FastAPI, React" />
-        </label>
-        <label>
-          Description
-          <textarea value={form.description} onChange={set("description")} rows={5} maxLength={2000} required />
         </label>
 
         <div className="image-field">
-          <span>Preview image (optional)</span>
-          {preview && <img className="thumb" src={preview} alt="Preview of the selected project image" />}
+          <span className="field-label">{t("form.image")}</span>
+          {preview && <img className="shot" src={preview} alt={t("form.imageAlt")} />}
           <p className="actions tight">
             <button type="button" className="btn small" onClick={() => fileInput.current.click()}>
-              {preview ? "Replace image" : "Choose image"}
+              {preview ? t("form.replaceImage") : t("form.chooseImage")}
             </button>
             {preview && (
               <button type="button" className="btn small danger" onClick={dropImage}>
-                Remove image
+                {t("form.removeImage")}
               </button>
             )}
           </p>
@@ -184,11 +225,11 @@ export default function ProjectForm({ project, token, onSaved, onClose, onUnauth
 
         <label className="check">
           <input type="checkbox" checked={form.featured} onChange={check("featured")} />
-          Featured on the home page
+          {t("form.featured")}
         </label>
         <label className="check">
           <input type="checkbox" checked={form.is_published} onChange={check("is_published")} />
-          Published (uncheck to keep it hidden)
+          {t("form.published")}
         </label>
 
         {error && (
@@ -201,12 +242,12 @@ export default function ProjectForm({ project, token, onSaved, onClose, onUnauth
             {info}
           </p>
         )}
-        <p className="actions">
+        <p className="actions tight">
           <button className="btn primary" disabled={!!busy}>
-            {busy === "save" ? "Saving…" : project || savedId ? "Save changes" : "Add project"}
+            {busy === "save" ? t("form.saving") : project || savedId ? t("form.save") : t("form.create")}
           </button>
           <button type="button" className="btn" onClick={() => dialog.current.close()}>
-            Cancel
+            {t("form.cancel")}
           </button>
         </p>
       </form>

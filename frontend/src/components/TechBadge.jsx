@@ -1,14 +1,19 @@
-// Pick black or white text depending on the badge color.
-function textColor(hex) {
-  const n = parseInt(hex.slice(1), 16);
-  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-  return r * 0.299 + g * 0.587 + b * 0.114 > 150 ? "#10161f" : "#ffffff";
+// Tech chip: neutral pill with a dot in the technology's brand color (color comes from the API).
+export default function TechBadge({ name, color = "#888888" }) {
+  return (
+    <li className="chip" style={{ "--c": color }}>
+      {name}
+    </li>
+  );
 }
 
-export default function TechBadge({ name, color = "#2d8b8b" }) {
+export function TechList({ techs }) {
+  if (!techs?.length) return null;
   return (
-    <span className="badge" style={{ background: color, color: textColor(color) }}>
-      {name}
-    </span>
+    <ul className="chips" aria-label="Technologies">
+      {techs.map((t) => (
+        <TechBadge key={t.id ?? t.name} name={t.name} color={t.color} />
+      ))}
+    </ul>
   );
 }

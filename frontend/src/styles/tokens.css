@@ -1,15 +1,61 @@
-/* Ocean Depths theme */
-:root {
-  --bg: #1a2332;
-  --bg-elevated: #212d40;
-  --bg-sidebar: #162030;
-  --border: #2f3f57;
-  --primary: #2d8b8b;
-  --secondary: #a8dadc;
-  --text: #f1faee;
-  --text-muted: #9fb3c8;
-  --danger: #e07a7a;
-  --radius: 8px;
+/*
+ * Design tokens. Dark is the default, light is set with <html data-theme="light">.
+ * One accent color (emerald). Everything else is neutral, so the brand dots
+ * of the tech badges are the only other colors on the page.
+ */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b0f17;
+  --surface: #121826;
+  --surface-2: #182032;
+  --ink: #e8edf6;
+  --ink-2: #9aa6bd;
+  --line: rgba(255, 255, 255, 0.08);
+  --accent: #34d399;
+  --accent-ink: #04140d;
+  --glow: rgba(52, 211, 153, 0.1);
+  --danger: #f87171;
+  --ok: #34d399;
+  --shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 30px rgba(0, 0, 0, 0.35),
+    0 30px 60px -24px rgba(0, 0, 0, 0.6);
+  --backdrop: rgba(3, 6, 12, 0.7);
+
+  /* layers of the 3D stack: database, API, UI */
+  --layer-db-a: #1e293b;
+  --layer-db-b: #334155;
+  --layer-api-a: #0f5f55;
+  --layer-api-b: #14967f;
+  --layer-ui-a: #059669;
+  --layer-ui-b: #34d399;
+
+  --radius: 18px;
+  --radius-sm: 12px;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  --font-sans: "DejaVu Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --surface-2: #f0f3f7;
+  --ink: #0f172a;
+  --ink-2: #4b5671;
+  --line: #e3e8ef;
+  --accent: #047857;
+  --accent-ink: #ffffff;
+  --glow: rgba(5, 150, 105, 0.08);
+  --danger: #c0392b;
+  --ok: #047857;
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 20px rgba(15, 23, 42, 0.06),
+    0 28px 50px -22px rgba(15, 23, 42, 0.22);
+  --backdrop: rgba(15, 23, 42, 0.45);
+
+  --layer-db-a: #475569;
+  --layer-db-b: #64748b;
+  --layer-api-a: #0f766e;
+  --layer-api-b: #14b8a6;
+  --layer-ui-a: #059669;
+  --layer-ui-b: #34d399;
 }

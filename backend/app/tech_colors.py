@@ -22,6 +22,11 @@ TECH_COLORS = {
     "jwt": "#d63aff",
     "cryptography": "#c0392b",
     "pytest": "#0a9edc",
+    "sqlalchemy": "#d71f00",
+    "alembic": "#6ba539",
+    "drizzle": "#9bc23a",
+    "vitest": "#6e9f18",
+    "pwa": "#5a0fc8",
 }
 
 

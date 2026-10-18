@@ -43,6 +43,9 @@ class Project(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(120))
     description: Mapped[str] = mapped_column(Text)
+    # Optional German texts. Empty = the frontend shows the English ones.
+    title_de: Mapped[str | None] = mapped_column(String(120), default=None)
+    description_de: Mapped[str | None] = mapped_column(Text, default=None)
     repo_url: Mapped[str] = mapped_column(String(300))
     live_url: Mapped[str | None] = mapped_column(String(300), default=None)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
