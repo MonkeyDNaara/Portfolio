@@ -14,6 +14,8 @@ My portfolio site, built as a small but complete full-stack project. My projects
 | --- | --- |
 | ![Projects](docs/screenshots/projects.png) | ![Owner view](docs/screenshots/owner.png) |
 
+![Skills page: hovering a skill shows the projects I used it in](docs/screenshots/skills.png)
+
 | Edit dialog with the German tab | Phone |
 | --- | --- |
 | ![Edit form](docs/screenshots/form.png) | <img src="docs/screenshots/mobile.png" alt="Home page on a phone" width="260"> |
@@ -34,7 +36,7 @@ My portfolio site, built as a small but complete full-stack project. My projects
 
 My first version looked like a code editor, with a file tree, a fake terminal and fake commit hashes. Lots of developer portfolios look like that, and it didn't say anything about me. The new one is calmer: dark first, one emerald accent, and the only other colors are the brand dots on the tech badges, so you can see at a glance what each project was built with.
 
-On the home page the three layers of this project (PostgreSQL, FastAPI, React) are drawn as a small 3D stack that spreads apart when you hover over it. The about page tells my path from BMW apprentice to developer as a timeline. Cards tilt a little on hover; that's turned off on touch screens and when "reduce motion" is set. No UI library: plain CSS with custom properties, about 15 kB.
+On the home page the three layers of this project (PostgreSQL, FastAPI, React) are drawn as a small 3D stack that spreads apart when you hover over it. The about page tells my path from BMW apprentice to developer as a timeline. On the skills page each skill shows the projects I used it in; that list comes live from the API, so it stays true when I add projects. Cards tilt a little on hover; that's turned off on touch screens and when "reduce motion" is set. No UI library: plain CSS with custom properties, about 15 kB.
 
 ## Tech stack
 

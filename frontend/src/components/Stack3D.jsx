@@ -7,21 +7,26 @@ const LAYERS = [
   { cls: "db", label: "DB · PostgreSQL", top: "66%", color: "var(--layer-db-b)" },
 ];
 
-export default function Stack3D() {
+// small = no labels, decorative (used in the skills core card)
+export default function Stack3D({ small = false }) {
   const { t } = useLanguage();
   return (
-    <div className="stack3d" role="img" aria-label={t("home.stackLabel")}>
+    <div
+      className={`stack3d${small ? " small" : ""}`}
+      {...(small ? { "aria-hidden": true } : { role: "img", "aria-label": t("home.stackLabel") })}
+    >
       <div className="scene" aria-hidden="true">
         {[...LAYERS].reverse().map((l) => (
           <div key={l.cls} className={`layer ${l.cls}`} />
         ))}
       </div>
-      {LAYERS.map((l) => (
-        <span key={l.cls} className="label" style={{ top: l.top }} aria-hidden="true">
-          <i style={{ background: l.color }} />
-          {l.label}
-        </span>
-      ))}
+      {!small &&
+        LAYERS.map((l) => (
+          <span key={l.cls} className="label" style={{ top: l.top }} aria-hidden="true">
+            <i style={{ background: l.color }} />
+            {l.label}
+          </span>
+        ))}
     </div>
   );
 }
