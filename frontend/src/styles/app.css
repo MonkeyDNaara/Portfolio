@@ -198,6 +198,15 @@ main {
 .site-footer a {
   color: var(--ink-2);
 }
+.site-footer .build {
+  opacity: 0.6;
+  text-decoration: none;
+}
+.site-footer .build:hover,
+.site-footer .build:focus-visible {
+  opacity: 1;
+  text-decoration: underline;
+}
 .site-footer .meta {
   display: flex;
   gap: 18px;
