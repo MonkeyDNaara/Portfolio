@@ -18,7 +18,7 @@ export const profile = {
  */
 const skill = (name, color, status = "used", extra = {}) => ({ name, color, status, techs: [name], ...extra });
 
-export const coreSkills = ["Python", "FastAPI", "PostgreSQL", "React", "TypeScript", "Git & GitHub"];
+export const coreSkills = ["Python", "PostgreSQL", "React", "TypeScript", "Git & GitHub"];
 
 export const skillGroups = [
   {
