@@ -6,7 +6,7 @@ export const profile = {
   github: "https://github.com/MonkeyDNaara",
   linkedin: "https://www.linkedin.com/in/niko-klam/",
   // Path or URL of the CV PDF. Empty = the link is hidden.
-  resume: "",
+  resume: "/Lebenslauf_Niko_Klam.pdf",
   repo: "https://github.com/MonkeyDNaara/Portfolio",
 };
 
