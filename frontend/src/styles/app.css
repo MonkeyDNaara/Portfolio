@@ -293,6 +293,32 @@ main {
   color: var(--ok);
   margin: 0;
 }
+.toast {
+  position: fixed;
+  inset: auto 0 24px;
+  width: fit-content;
+  max-width: calc(100vw - 32px);
+  margin: 0 auto;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--ok);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  font-size: 15px;
+  z-index: 50;
+  animation: toast-in 0.2s ease-out;
+}
+.toast.error {
+  border-left-color: var(--danger);
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
 
 /* ---------- tech chips (brand color as a dot) ---------- */
 .chips {

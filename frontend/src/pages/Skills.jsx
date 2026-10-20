@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Stack3D from "../components/Stack3D.jsx";
 import { coreSkills, skillGroups } from "../data/profile.js";
 import { localized, useLanguage } from "../i18n/LanguageProvider.jsx";
-import useProjects from "../useProjects.js";
+import { usePublishedProjects } from "../projects.jsx";
 import useReveal from "../useReveal.js";
 import useSpotlight from "../useSpotlight.js";
 import useTilt from "../useTilt.js";
@@ -39,7 +39,7 @@ function SkillCard({ className = "", style, children, labelledBy }) {
 
 export default function Skills() {
   const { lang, t } = useLanguage();
-  const { projects } = useProjects();
+  const { projects } = usePublishedProjects();
   const usage = useMemo(() => buildUsage(projects), [projects]);
   const gridRef = useReveal();
   const [active, setActive] = useState(null); // { name, rect, pinned, el }
