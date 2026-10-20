@@ -706,6 +706,43 @@ body:has(dialog[open]) {
 .project-modal .actions {
   margin: 22px 0 0;
 }
+.project-modal .actions.tight {
+  margin: 0;
+}
+/* owner area in the modal and on the detail page */
+.owner-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--line);
+}
+.owner-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font: 500 12px var(--font-mono);
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.owner-head .pill {
+  text-transform: none;
+  letter-spacing: 0;
+}
+.owner-actions .confirm {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--danger) 45%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--danger) 7%, transparent);
+}
+.owner-actions .confirm p:first-child {
+  margin: 0;
+  font-weight: 600;
+}
 
 /* ---------- page head ---------- */
 .page-head {

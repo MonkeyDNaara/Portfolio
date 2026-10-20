@@ -2,12 +2,12 @@ import { useRef, useState } from "react";
 
 import ProjectCard from "../components/ProjectCard.jsx";
 import { ErrorMessage, Loading } from "../components/Status.jsx";
-import { localized, useLanguage } from "../i18n/LanguageProvider.jsx";
+import { useLanguage } from "../i18n/LanguageProvider.jsx";
 import { useProjects } from "../projects.jsx";
 
 export default function Projects() {
-  const { lang, t } = useLanguage();
-  const { projects, error, reload, isOwner, add, edit, toggle, remove, reorder } = useProjects();
+  const { t } = useLanguage();
+  const { projects, error, reload, isOwner, add, reorder } = useProjects();
   const dragFrom = useRef(null);
   const [dragOver, setDragOver] = useState(null);
 
@@ -16,11 +16,6 @@ export default function Projects() {
     const next = [...projects];
     next.splice(to, 0, next.splice(from, 1)[0]);
     reorder(next);
-  }
-
-  function confirmRemove(project) {
-    const { title } = localized(project, lang);
-    if (window.confirm(t("projects.confirmDelete", { title }))) remove(project);
   }
 
   return (
@@ -69,10 +64,7 @@ export default function Projects() {
               tilt={!isOwner}
               admin={
                 isOwner && {
-                  onEdit: () => edit(p),
-                  onDelete: () => confirmRemove(p),
                   onMove: (dir) => move(i, i + dir),
-                  onToggle: (field) => toggle(p, field),
                   canUp: i > 0,
                   canDown: i < projects.length - 1,
                 }

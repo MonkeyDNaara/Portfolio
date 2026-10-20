@@ -16,8 +16,8 @@ export function initials(title) {
 }
 
 /**
- * `admin` is optional. When given, the owner controls are shown:
- * { onEdit, onDelete, onMove(-1|1), onToggle(field), canUp, canDown }
+ * `admin` is optional. When given, the owner sees the status pills and the order buttons:
+ * { onMove(-1|1), canUp, canDown }. Edit, feature, hide and delete live in the modal.
  * `tilt` turns on the 3D hover effect (off on the owner view, it fights with drag and drop).
  */
 export default function ProjectCard({ project, admin, tilt = true }) {
@@ -68,18 +68,6 @@ export default function ProjectCard({ project, admin, tilt = true }) {
             </button>
             <button className="btn small" onClick={() => admin.onMove(1)} disabled={!admin.canDown} aria-label={t("projects.moveDown")}>
               ↓
-            </button>
-            <button className="btn small" onClick={admin.onEdit}>
-              {t("projects.edit")}
-            </button>
-            <button className="btn small" onClick={() => admin.onToggle("featured")}>
-              {project.featured ? t("projects.unfeature") : t("projects.feature")}
-            </button>
-            <button className="btn small" onClick={() => admin.onToggle("is_published")}>
-              {project.is_published ? t("projects.hide") : t("projects.publish")}
-            </button>
-            <button className="btn small danger" onClick={admin.onDelete}>
-              {t("projects.delete")}
             </button>
           </div>
         )}
