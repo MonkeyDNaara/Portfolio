@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import Stack3D from "../components/Stack3D.jsx";
 import { coreSkills, skillGroups } from "../data/profile.js";
 import { localized, useLanguage } from "../i18n/LanguageProvider.jsx";
-import useProjects from "../useProjects.js";
+import { usePublishedProjects } from "../projects.jsx";
 import useReveal from "../useReveal.js";
 import useSpotlight from "../useSpotlight.js";
 import useTilt from "../useTilt.js";
@@ -39,7 +39,7 @@ function SkillCard({ className = "", style, children, labelledBy }) {
 
 export default function Skills() {
   const { lang, t } = useLanguage();
-  const { projects } = useProjects();
+  const { projects } = usePublishedProjects();
   const usage = useMemo(() => buildUsage(projects), [projects]);
   const gridRef = useReveal();
   const [active, setActive] = useState(null); // { name, rect, pinned, el }
@@ -199,8 +199,9 @@ export default function Skills() {
 function SkillPopover({ skill, rect, projects, lang, t, onEnter, onLeave }) {
   const left = Math.max(12, Math.min(rect.left, window.innerWidth - 312));
   const style = { left, top: rect.bottom + 8 };
+  const location = useLocation();
   const links = projects.map((p) => (
-    <Link key={p.id} className="pop-project" to={`/projects/${p.id}`}>
+    <Link key={p.id} className="pop-project" to={`/projects/${p.id}`} state={{ background: location }}>
       {localized(p, lang).title}
     </Link>
   ));

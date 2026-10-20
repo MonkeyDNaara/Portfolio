@@ -5,17 +5,20 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
 import { AuthProvider } from "./auth.jsx";
 import { LanguageProvider } from "./i18n/LanguageProvider.jsx";
+import { ProjectsProvider } from "./projects.jsx";
 import { ThemeProvider } from "./theme/ThemeProvider.jsx";
 import "./styles/tokens.css";
 import "./styles/app.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <ThemeProvider>
         <LanguageProvider>
           <AuthProvider>
-            <App />
+            <ProjectsProvider>
+              <App />
+            </ProjectsProvider>
           </AuthProvider>
         </LanguageProvider>
       </ThemeProvider>

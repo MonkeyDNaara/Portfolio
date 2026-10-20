@@ -6,7 +6,7 @@
 
 > Free Render tier: the API sleeps after a while, so the first request can take about 30 seconds.
 
-My portfolio site, built as a small but complete full-stack project. My projects live in a PostgreSQL database (Neon), and when I'm logged in I can add, edit, hide, feature and reorder them with buttons right on the projects page, no code changes needed. I came from industrial automation, so I wanted a project that shows the whole path: database, API, auth, frontend, tests, CI and deployment.
+My portfolio site, built as a small but complete full-stack project. My projects live in a PostgreSQL database (Neon), and when I'm logged in I can add, edit, hide, feature and reorder them right on the site, no code changes needed. I came from industrial automation, so I wanted a project that shows the whole path: database, API, auth, frontend, tests, CI and deployment.
 
 ![Home page in dark mode](docs/screenshots/home.png)
 
@@ -49,7 +49,7 @@ On the home page the three layers of this project (PostgreSQL, FastAPI, React) a
 | Backend | Python, FastAPI, SQLAlchemy 2, Alembic, PyJWT |
 | Database | PostgreSQL (Neon), SQLite for quick local dev and tests |
 | Frontend | React, Vite, React Router, plain CSS, small self-made i18n (no library) |
-| Quality | pytest (51 tests, run on SQLite and on Postgres), ruff, GitHub Actions |
+| Quality | pytest (51 tests, run on SQLite and on Postgres), ruff, Vitest + React Testing Library, GitHub Actions |
 | Deployment | Docker / docker-compose, Render (see `render.yaml`) |
 
 ## How it fits together
@@ -112,7 +112,14 @@ The tests cover login, token handling, protected routes, validation, CRUD, hidin
 TEST_DATABASE_URL=postgresql://user:pass@localhost:5432/portfolio_test pytest -q
 ```
 
-CI runs ruff and the tests on SQLite and on a Postgres service, plus the frontend build, on every pull request.
+The frontend has a few Vitest + React Testing Library tests for the project modal (open from a card, close, direct link as a page, owner delete with confirm) and the German/English fallback. They render the whole app with a faked `fetch`:
+
+```bash
+cd frontend
+npm test
+```
+
+CI runs ruff and the backend tests on SQLite and on a Postgres service, plus the frontend tests and build, on every pull request.
 
 ## Deployment
 
@@ -140,11 +147,12 @@ The free Render tier goes to sleep, so the first request after a while can take 
 - **Images are stored in Postgres** (a separate table, so listing projects never loads them). That keeps the setup to one database with nothing extra to configure. It is fine for a handful of screenshots, for lots of images I would switch to object storage.
 - **Uploads** are limited to 1 MB and checked by their magic bytes (PNG, JPEG, WebP), not by file name.
 - **Drag and drop has arrow buttons as an alternative**, so reordering also works with a keyboard.
+- **Project modal tied to the URL.** A card opens `/projects/:id` as a modal on top of the page you came from (React Router "background location"). So the back button closes it and links stay shareable, and a link opened directly still shows a normal page. It's a native `<dialog>`, which gives focus trapping and Esc for free.
 
 ## What I would do next
 
 - Rate limiting on the login route
-- Frontend tests (Vitest and React Testing Library)
+- More frontend tests (forms, login)
 - Refresh tokens or cookie-based sessions
 
 ## Project layout

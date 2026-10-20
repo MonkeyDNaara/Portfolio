@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import ProjectCard from "../components/ProjectCard.jsx";
 import Stack3D from "../components/Stack3D.jsx";
 import { useLanguage } from "../i18n/LanguageProvider.jsx";
-import useProjects from "../useProjects.js";
+import { usePublishedProjects } from "../projects.jsx";
 
 export default function Home() {
   const { t } = useLanguage();
-  const { projects } = useProjects();
+  const { projects } = usePublishedProjects();
   // Featured projects first; if none are featured yet, show the first three.
   const list = projects || [];
   const featured = list.filter((p) => p.featured);

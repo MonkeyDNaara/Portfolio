@@ -64,6 +64,8 @@ const de = {
     deleted: '"{title}" gelöscht.',
     added: "Projekt hinzugefügt.",
     updated: "Projekt aktualisiert.",
+    close: "Schließen",
+    cancel: "Abbrechen",
   },
   form: {
     addTitle: "Projekt hinzufügen",
