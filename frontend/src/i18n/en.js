@@ -64,6 +64,7 @@ const en = {
     deleted: 'Deleted "{title}".',
     added: "Project added.",
     updated: "Project updated.",
+    close: "Close",
   },
   form: {
     addTitle: "Add project",

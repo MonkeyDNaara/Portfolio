@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import { imageUrl } from "../api.js";
 import { localized, useLanguage } from "../i18n/LanguageProvider.jsx";
@@ -6,7 +6,7 @@ import useTilt from "../useTilt.js";
 import { ArrowUpRight } from "./Icons.jsx";
 import { TechList } from "./TechBadge.jsx";
 
-function initials(title) {
+export function initials(title) {
   return title
     .split(/[\s-]+/)
     .filter(Boolean)
@@ -25,6 +25,7 @@ export default function ProjectCard({ project, admin, tilt = true }) {
   const { title, description } = localized(project, lang);
   const ref = useTilt({ enabled: tilt });
   const img = imageUrl(project);
+  const location = useLocation();
 
   return (
     <article ref={ref} className={`card project tilt${project.is_published ? "" : " is-hidden"}`}>
@@ -43,7 +44,10 @@ export default function ProjectCard({ project, admin, tilt = true }) {
           </p>
         )}
         <h3>
-          <Link to={`/projects/${project.id}`}>{title}</Link>
+          {/* stretched link: covers the whole card and opens the project as a modal */}
+          <Link to={`/projects/${project.id}`} state={{ background: location }} draggable={admin ? false : undefined}>
+            {title}
+          </Link>
         </h3>
         <p className="desc">{description}</p>
         <TechList techs={project.techs} />

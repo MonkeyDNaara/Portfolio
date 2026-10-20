@@ -158,3 +158,10 @@ export function usePublishedProjects() {
   const published = useMemo(() => projects?.filter((p) => p.is_published) ?? null, [projects]);
   return { projects: published, ...rest };
 }
+
+/** One project from the shared list, e.g. for the detail page and the modal. */
+export function useProject(id) {
+  const { projects, error, reload } = useProjects();
+  const project = projects?.find((p) => String(p.id) === String(id)) ?? null;
+  return { project, loading: !projects && !error, notFound: Boolean(projects) && !project, error, reload };
+}
