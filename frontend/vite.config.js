@@ -16,4 +16,8 @@ function buildCommit() {
 export default defineConfig({
   plugins: [react()],
   define: { __BUILD_COMMIT__: JSON.stringify(buildCommit()) },
+  test: {
+    environment: "jsdom",
+    setupFiles: "./src/test/setup.js",
+  },
 });
