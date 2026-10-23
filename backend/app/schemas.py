@@ -1,6 +1,8 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator, model_validator
+
+from .tech_colors import color_for
 
 
 class TechOut(BaseModel):
@@ -9,6 +11,13 @@ class TechOut(BaseModel):
     id: int
     name: str
     color: str
+
+    @model_validator(mode="after")
+    def current_color(self) -> "TechOut":
+        # The stored color is only a fallback, so techs created before a name was
+        # added to TECH_COLORS still get the right color.
+        self.color = color_for(self.name, fallback=self.color)
+        return self
 
 
 class ProjectIn(BaseModel):
