@@ -19,7 +19,9 @@ class Settings(BaseSettings):
     login_max_failures: int = 5
     login_global_max_failures: int = 50
     login_window_seconds: int = 15 * 60
-    trusted_proxies: int = 0  # 1 on Render: read the client IP from X-Forwarded-For
+    # Proxies whose X-Forwarded-For entries are skipped, e.g. "private,cloudflare" on Render.
+    # Empty (local, Docker): the direct peer is the client. See rate_limit.client_ip.
+    trusted_proxy_networks: str = ""
 
     @property
     def sqlalchemy_url(self) -> str:

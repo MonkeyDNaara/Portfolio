@@ -5,8 +5,10 @@ resets the counters (worst case an attacker gets a few extra tries). With severa
 instances this would have to move to the database or Redis.
 """
 
+import ipaddress
 import time
 from collections import defaultdict, deque
+from functools import lru_cache
 from threading import Lock
 
 from fastapi import Request
@@ -56,6 +58,37 @@ class FailureLimiter:
             self._failures.clear()
 
 
+# Networks that `TRUSTED_PROXY_NETWORKS` can name instead of writing the CIDRs out.
+PRIVATE = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "fc00::/7", "::1/128"]
+# From https://www.cloudflare.com/ips/ (checked 2026-10-23). Cloudflare rarely changes them.
+CLOUDFLARE = [
+    "173.245.48.0/20", "103.21.244.0/22", "103.22.200.0/22", "103.31.4.0/22", "141.101.64.0/18",
+    "108.162.192.0/18", "190.93.240.0/20", "188.114.96.0/20", "197.234.240.0/22", "198.41.128.0/17",
+    "162.158.0.0/15", "104.16.0.0/13", "104.24.0.0/14", "172.64.0.0/13", "131.0.72.0/22",
+    "2400:cb00::/32", "2606:4700::/32", "2803:f800::/32", "2405:b500::/32", "2405:8100::/32",
+    "2a06:98c0::/29", "2c0f:f248::/32",
+]
+ALIASES = {"private": PRIVATE, "cloudflare": CLOUDFLARE}
+
+
+@lru_cache
+def proxy_networks(setting: str) -> tuple:
+    """'private,cloudflare,203.0.113.0/24' -> parsed networks. Empty -> no proxy trusted."""
+    networks = []
+    for part in (p.strip().lower() for p in setting.split(",")):
+        for cidr in ALIASES.get(part, [part] if part else []):
+            networks.append(ipaddress.ip_network(cidr))
+    return tuple(networks)
+
+
+def is_trusted(address: str, networks) -> bool:
+    try:
+        ip = ipaddress.ip_address(address)
+    except ValueError:
+        return False  # garbage is never one of our proxies
+    return any(ip in net for net in networks)
+
+
 settings = get_settings()
 # Per client IP, plus one shared limit for all clients together. The shared one is a
 # backstop in case the client IP is wrong (proxy setup) or an attacker rotates IPs.
@@ -65,17 +98,24 @@ GLOBAL_KEY = "*"
 
 
 def client_ip(request: Request) -> str:
-    """The client IP, also behind a proxy.
+    """The client IP, also behind proxies.
 
-    With TRUSTED_PROXIES=0 (local, Docker) it's the direct peer. Behind proxies that
-    append to X-Forwarded-For, the entry that many places from the right was written by
-    the first of our proxies. Entries further left come from the client and can be faked.
-    Render has two proxies (edge + internal load balancer), so it needs 2: the last entry
-    is an internal 10.x address, the one before it is the real client.
+    Without TRUSTED_PROXY_NETWORKS (local, Docker) it's the direct peer. Behind proxies,
+    every proxy appends the address it got the request from to X-Forwarded-For, and
+    the client can send its own fake entries on the left. So the list is read from the
+    right and every address from a trusted network (our own proxies) is skipped. The
+    first address that isn't trusted is the client. This works no matter how many
+    proxies there are (on Render: Cloudflare, Render's edge, an internal load balancer).
+
+    Known limit: a request sent through Cloudflare Workers comes from a Cloudflare IP and
+    can bring its own X-Forwarded-For. The shared limit for all IPs still catches that.
     """
-    hops = get_settings().trusted_proxies
-    if hops > 0:
-        forwarded = [ip.strip() for ip in request.headers.get("x-forwarded-for", "").split(",") if ip.strip()]
-        if len(forwarded) >= hops:
-            return forwarded[-hops]
+    networks = proxy_networks(get_settings().trusted_proxy_networks)
+    forwarded = request.headers.get("x-forwarded-for", "")
+    if networks and forwarded:
+        hops = [h.strip() for h in forwarded.split(",") if h.strip()]
+        for hop in reversed(hops):
+            if not is_trusted(hop, networks):
+                return hop
+        return hops[0]  # every entry is one of our proxies
     return request.client.host if request.client else "unknown"
