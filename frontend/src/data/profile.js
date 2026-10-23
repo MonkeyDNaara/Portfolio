@@ -31,7 +31,7 @@ export const skillGroups = [
       skill("REST APIs", "#94a3b8", "used", { techs: ["FastAPI", "Express", "REST API"] }),
       skill("JWT auth", "#d63aff", "used", { techs: ["JWT"] }),
       skill("pytest", "#0a9edc"),
-      skill("Drizzle ORM", "#9bc23a", "used", { techs: ["Drizzle"] }),
+      skill("Drizzle ORM", "#9bc23a", "used", { techs: ["Drizzle", "Drizzle ORM"] }),
       skill("Flask", "#94a3b8", "learning"),
       skill("C# / .NET", "#512BD4", "learning", { techs: ["C#", ".NET"] }),
       skill("MongoDB", "#47A248", "learning"),
