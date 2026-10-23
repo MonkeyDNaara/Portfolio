@@ -25,8 +25,8 @@ services:
         sync: false
       - key: ANTHROPIC_API_KEY # optional, enables the AI description button
         sync: false
-      - key: TRUSTED_PROXIES # Render has two proxies, both append to X-Forwarded-For (login rate limit)
-        value: "2"
+      - key: TRUSTED_PROXY_NETWORKS # skipped in X-Forwarded-For to find the client IP (login rate limit)
+        value: private,cloudflare
 
   - type: web
     name: portfolio-web

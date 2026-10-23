@@ -74,9 +74,18 @@ def fail(client, ip="1.1.1.1"):
     )
 
 
+# What Render passes on: Cloudflare and Render's internal load balancer append after the client.
+CF, LB = "162.158.110.112", "10.30.89.5"
+
+
+def via_render(client_ip, fake=None):
+    """X-Forwarded-For as it arrives on Render, optionally with a faked entry from the client."""
+    return ", ".join(h for h in (fake, client_ip, CF, LB) if h)
+
+
 @pytest.fixture()
 def behind_render_proxy(monkeypatch):
-    monkeypatch.setattr(get_settings(), "trusted_proxies", 1)
+    monkeypatch.setattr(get_settings(), "trusted_proxy_networks", "private,cloudflare")
 
 
 def test_login_is_blocked_after_five_failures(client, db):
@@ -103,27 +112,34 @@ def test_successful_login_resets_the_counter(client, db):
 def test_other_ips_are_not_blocked(client, db, behind_render_proxy):
     ensure_admin(db, "admin", ADMIN_PASSWORD)
     for _ in range(5):
-        fail(client, ip="1.1.1.1")
-    assert fail(client, ip="1.1.1.1").status_code == 429
-    assert fail(client, ip="2.2.2.2").status_code == 401
+        fail(client, ip=via_render("84.177.117.125"))
+    assert fail(client, ip=via_render("84.177.117.125")).status_code == 429
+    assert fail(client, ip=via_render("5.6.7.8")).status_code == 401
 
 
 def test_faked_forwarded_for_entries_dont_help(client, db, behind_render_proxy):
-    # The client sends its own X-Forwarded-For, the proxy appends the real IP at the end.
+    # The client sends its own X-Forwarded-For (even a "trusted" 10.x or Cloudflare address),
+    # the proxies append the real IP after it.
     ensure_admin(db, "admin", ADMIN_PASSWORD)
-    for i in range(5):
-        fail(client, ip=f"10.0.0.{i}, 1.1.1.1")
-    assert fail(client, ip="10.0.0.99, 1.1.1.1").status_code == 429
+    for fake in ("6.6.6.6", "10.0.0.1", "162.158.0.1", "not-an-ip", "6.6.6.7"):
+        fail(client, ip=via_render("84.177.117.125", fake=fake))
+    assert fail(client, ip=via_render("84.177.117.125", fake="7.7.7.7")).status_code == 429
 
 
-def test_two_proxies_like_on_render(client, db, monkeypatch):
-    # Render: the edge proxy appends the client IP, the internal load balancer appends its own 10.x address.
-    monkeypatch.setattr(get_settings(), "trusted_proxies", 2)
+def test_number_of_proxies_doesnt_matter(client, db, behind_render_proxy):
     ensure_admin(db, "admin", ADMIN_PASSWORD)
-    for i in range(5):
-        fail(client, ip=f"6.6.6.{i}, 1.1.1.1, 10.30.89.{i}")
-    assert fail(client, ip="1.1.1.1, 10.30.89.99").status_code == 429
-    assert fail(client, ip="2.2.2.2, 10.30.89.5").status_code == 401
+    me = "84.177.117.125"
+    chains = [me, f"{me}, {LB}", via_render(me), f"{me}, {CF}, {CF}, {LB}, {LB}"]
+    for chain in chains + [chains[0]]:
+        fail(client, ip=chain)
+    assert fail(client, ip=chains[2]).status_code == 429
+
+
+def test_ipv6_clients_and_proxies(client, db, behind_render_proxy):
+    ensure_admin(db, "admin", ADMIN_PASSWORD)
+    for _ in range(5):
+        fail(client, ip="2001:db8::1, 2606:4700::1, 10.30.89.5")
+    assert fail(client, ip="2001:db8::1, 2a06:98c0::5").status_code == 429
 
 
 def test_forwarded_for_is_ignored_without_a_trusted_proxy(client, db):
@@ -138,8 +154,18 @@ def test_global_limit_catches_many_ips(client, db, behind_render_proxy, monkeypa
     monkeypatch.setattr(rate_limit.everyone, "max_failures", 3)
     ensure_admin(db, "admin", ADMIN_PASSWORD)
     for i in range(3):
-        fail(client, ip=f"9.9.9.{i}")
-    assert fail(client, ip="8.8.8.8").status_code == 429
+        fail(client, ip=via_render(f"9.9.9.{i}"))
+    assert fail(client, ip=via_render("8.8.8.8")).status_code == 429
+
+
+def test_proxy_network_setting():
+    nets = rate_limit.proxy_networks("private, Cloudflare, 203.0.113.0/24")
+    assert rate_limit.is_trusted("10.30.89.5", nets)
+    assert rate_limit.is_trusted("162.158.110.112", nets)
+    assert rate_limit.is_trusted("203.0.113.9", nets)
+    assert not rate_limit.is_trusted("84.177.117.125", nets)
+    assert not rate_limit.is_trusted("garbage", nets)
+    assert rate_limit.proxy_networks("") == ()
 
 
 def test_retry_after_header_is_readable_by_the_frontend(client, db):
