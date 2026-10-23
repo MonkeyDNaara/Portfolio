@@ -68,8 +68,10 @@ def client_ip(request: Request) -> str:
     """The client IP, also behind a proxy.
 
     With TRUSTED_PROXIES=0 (local, Docker) it's the direct peer. Behind proxies that
-    append to X-Forwarded-For (Render: 1), the entry that many places from the right was
-    written by our own proxy. Entries further left come from the client and can be faked.
+    append to X-Forwarded-For, the entry that many places from the right was written by
+    the first of our proxies. Entries further left come from the client and can be faked.
+    Render has two proxies (edge + internal load balancer), so it needs 2: the last entry
+    is an internal 10.x address, the one before it is the real client.
     """
     hops = get_settings().trusted_proxies
     if hops > 0:

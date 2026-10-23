@@ -49,7 +49,7 @@ On the home page the three layers of this project (PostgreSQL, FastAPI, React) a
 | Backend | Python, FastAPI, SQLAlchemy 2, Alembic, PyJWT |
 | Database | PostgreSQL (Neon), SQLite for quick local dev and tests |
 | Frontend | React, Vite, React Router, plain CSS, small self-made i18n (no library) |
-| Quality | pytest (66 tests, run on SQLite and on Postgres), ruff, Vitest + React Testing Library, GitHub Actions |
+| Quality | pytest (67 tests, run on SQLite and on Postgres), ruff, Vitest + React Testing Library, GitHub Actions |
 | Deployment | Docker / docker-compose, Render (see `render.yaml`) |
 
 ## How it fits together
@@ -146,7 +146,7 @@ The free Render tier goes to sleep, so the first request after a while can take 
 - **The AI endpoint** only returns a draft and never saves anything. The README is treated as untrusted input in the prompt.
 - **Images are stored in Postgres** (a separate table, so listing projects never loads them). That keeps the setup to one database with nothing extra to configure. It is fine for a handful of screenshots, for lots of images I would switch to object storage.
 - **Uploads** are limited to 1 MB and checked by their magic bytes (PNG, JPEG, WebP), not by file name.
-- **Login rate limit in memory.** 5 failed logins per IP in 15 minutes, then `429` with `Retry-After` (the form shows the wait in minutes). A shared limit of 50 failures for all IPs together is the backstop if someone rotates IPs. The client IP comes from the last `X-Forwarded-For` entry (`TRUSTED_PROXIES=1` on Render), because the entries before it can be sent by the client. Counters live in memory: the API is one process, and a restart only resets them. With several instances I'd move them to Redis or the database.
+- **Login rate limit in memory.** 5 failed logins per IP in 15 minutes, then `429` with `Retry-After` (the form shows the wait in minutes). A shared limit of 50 failures for all IPs together is the backstop if someone rotates IPs. The client IP is read from `X-Forwarded-For` counted from the right, because entries on the left can be sent by the client. Render has two proxies (the last entry is an internal `10.x` address), so it runs with `TRUSTED_PROXIES=2`. I first assumed one proxy and only found the second one through the "Failed login from …" log line after the deploy. Counters live in memory: the API is one process, and a restart only resets them. With several instances I'd move them to Redis or the database.
 - **Drag and drop has arrow buttons as an alternative**, so reordering also works with a keyboard.
 - **Project modal tied to the URL.** A card opens `/projects/:id` as a modal on top of the page you came from (React Router "background location"). So the back button closes it and links stay shareable, and a link opened directly still shows a normal page. It's a native `<dialog>`, which gives focus trapping and Esc for free.
 
