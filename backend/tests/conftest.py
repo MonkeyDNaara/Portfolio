@@ -13,6 +13,7 @@ from sqlalchemy import create_engine  # noqa: E402
 from sqlalchemy.orm import sessionmaker  # noqa: E402
 from sqlalchemy.pool import StaticPool  # noqa: E402
 
+from app import rate_limit  # noqa: E402
 from app.database import Base, get_db  # noqa: E402
 from app.main import app  # noqa: E402
 from app.users import ensure_admin  # noqa: E402
@@ -37,6 +38,13 @@ def db():
     yield session
     session.close()
     Base.metadata.drop_all(engine)
+
+
+@pytest.fixture(autouse=True)
+def reset_login_limits():
+    # the limiters live in memory for the whole process, so every test starts fresh
+    rate_limit.per_ip.clear()
+    rate_limit.everyone.clear()
 
 
 @pytest.fixture()

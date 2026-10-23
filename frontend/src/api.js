@@ -1,9 +1,10 @@
 export const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
 
 export class ApiError extends Error {
-  constructor(status, message) {
+  constructor(status, message, retryAfter = null) {
     super(message);
     this.status = status;
+    this.retryAfter = retryAfter; // seconds, from the Retry-After header (429)
   }
 }
 
@@ -35,7 +36,10 @@ export async function api(path, { method = "GET", body, token } = {}) {
 
   if (res.status === 204) return null;
   const data = await res.json().catch(() => null);
-  if (!res.ok) throw new ApiError(res.status, formatDetail(data?.detail));
+  if (!res.ok) {
+    const retryAfter = Number(res.headers.get("Retry-After")) || null;
+    throw new ApiError(res.status, formatDetail(data?.detail), retryAfter);
+  }
   return data;
 }
 

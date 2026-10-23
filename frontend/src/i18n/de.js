@@ -155,6 +155,8 @@ const de = {
     password: "Passwort",
     submit: "Anmelden",
     busy: "Melde an…",
+    invalid: "Benutzername oder Passwort ist falsch.",
+    tooMany: "Zu viele Fehlversuche. Versuch es in {minutes} Min. nochmal.",
   },
   notFound: {
     text: "Diese Seite gibt es nicht.",

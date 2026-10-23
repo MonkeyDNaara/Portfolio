@@ -28,7 +28,7 @@ My portfolio site, built as a small but complete full-stack project. My projects
 
 - Public pages: home, about, skills, projects list, project detail and contact
 - Visitors only see published projects. Featured ones show up on the home page.
-- Owner login (JWT). When I'm logged in, the projects page shows an **+ Add project** button and controls on each card: edit, delete, hide/publish, feature and reorder (arrow buttons or drag and drop)
+- Owner login (JWT) with a rate limit against password guessing. When I'm logged in, the projects page shows an **+ Add project** button, the cards can be reordered (arrow buttons or drag and drop), and each project's modal has edit, delete, hide/publish and feature
 - **Import from GitHub**: paste a repo URL and the title, description, live link and technologies are filled in from the GitHub API
 - Optional AI helper: drafts a project description from a repo's README using the Claude API, I always edit it before saving
 - Preview image per project. The browser scales it down, the API checks the file type by its bytes and stores it in Postgres.
@@ -49,7 +49,7 @@ On the home page the three layers of this project (PostgreSQL, FastAPI, React) a
 | Backend | Python, FastAPI, SQLAlchemy 2, Alembic, PyJWT |
 | Database | PostgreSQL (Neon), SQLite for quick local dev and tests |
 | Frontend | React, Vite, React Router, plain CSS, small self-made i18n (no library) |
-| Quality | pytest (51 tests, run on SQLite and on Postgres), ruff, Vitest + React Testing Library, GitHub Actions |
+| Quality | pytest (66 tests, run on SQLite and on Postgres), ruff, Vitest + React Testing Library, GitHub Actions |
 | Deployment | Docker / docker-compose, Render (see `render.yaml`) |
 
 ## How it fits together
@@ -106,7 +106,7 @@ pytest -q
 ruff check .
 ```
 
-The tests cover login, token handling, protected routes, validation, CRUD, hiding, ordering, image upload, the seed script, the GitHub import and the AI endpoint (with GitHub and Claude mocked). To run them against Postgres too:
+The tests cover login, the login rate limit, token handling, protected routes, validation, CRUD, hiding, ordering, image upload, the seed script, the GitHub import and the AI endpoint (with GitHub and Claude mocked). To run them against Postgres too:
 
 ```bash
 TEST_DATABASE_URL=postgresql://user:pass@localhost:5432/portfolio_test pytest -q
@@ -146,13 +146,13 @@ The free Render tier goes to sleep, so the first request after a while can take 
 - **The AI endpoint** only returns a draft and never saves anything. The README is treated as untrusted input in the prompt.
 - **Images are stored in Postgres** (a separate table, so listing projects never loads them). That keeps the setup to one database with nothing extra to configure. It is fine for a handful of screenshots, for lots of images I would switch to object storage.
 - **Uploads** are limited to 1 MB and checked by their magic bytes (PNG, JPEG, WebP), not by file name.
+- **Login rate limit in memory.** 5 failed logins per IP in 15 minutes, then `429` with `Retry-After` (the form shows the wait in minutes). A shared limit of 50 failures for all IPs together is the backstop if someone rotates IPs. The client IP comes from the last `X-Forwarded-For` entry (`TRUSTED_PROXIES=1` on Render), because the entries before it can be sent by the client. Counters live in memory: the API is one process, and a restart only resets them. With several instances I'd move them to Redis or the database.
 - **Drag and drop has arrow buttons as an alternative**, so reordering also works with a keyboard.
 - **Project modal tied to the URL.** A card opens `/projects/:id` as a modal on top of the page you came from (React Router "background location"). So the back button closes it and links stay shareable, and a link opened directly still shows a normal page. It's a native `<dialog>`, which gives focus trapping and Esc for free.
 
 ## What I would do next
 
-- Rate limiting on the login route
-- More frontend tests (forms, login)
+- More frontend tests (project form)
 - Refresh tokens or cookie-based sessions
 
 ## Project layout

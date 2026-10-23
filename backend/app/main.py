@@ -35,6 +35,7 @@ app.add_middleware(
     allow_origins=settings.cors_origin_list,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Retry-After"],  # so the login form can show how long to wait
 )
 
 
