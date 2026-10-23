@@ -15,6 +15,11 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-haiku-4-5"
     github_token: str = ""
+    # login brute-force protection (see rate_limit.py)
+    login_max_failures: int = 5
+    login_global_max_failures: int = 50
+    login_window_seconds: int = 15 * 60
+    trusted_proxies: int = 0  # 1 on Render: read the client IP from X-Forwarded-For
 
     @property
     def sqlalchemy_url(self) -> str:
