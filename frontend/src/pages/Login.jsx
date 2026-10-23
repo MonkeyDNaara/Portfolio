@@ -16,6 +16,12 @@ export default function Login() {
 
   if (token) return <Navigate to="/projects" replace />;
 
+  function errorText(err) {
+    if (err.status === 401) return t("login.invalid");
+    if (err.status === 429) return t("login.tooMany", { minutes: Math.max(1, Math.ceil((err.retryAfter || 60) / 60)) });
+    return err.message;
+  }
+
   async function onSubmit(e) {
     e.preventDefault();
     setBusy(true);
@@ -24,7 +30,7 @@ export default function Login() {
       await login(username, password);
       navigate(location.state?.from || "/projects", { replace: true });
     } catch (err) {
-      setError(err.message);
+      setError(errorText(err));
     } finally {
       setBusy(false);
     }

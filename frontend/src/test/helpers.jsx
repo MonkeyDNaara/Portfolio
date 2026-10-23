@@ -49,12 +49,13 @@ export function mockApi(projects = makeProjects()) {
   let list = projects;
   const fetchMock = vi.fn(async (url, { method = "GET" } = {}) => {
     const path = new URL(url).pathname;
-    const json = (data, status = 200) => ({ ok: status < 400, status, json: async () => data });
+    const json = (data, status = 200) =>
+      new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
     if (method === "GET" && path === "/projects") return json(list);
     const match = path.match(/^\/projects\/(\d+)$/);
     if (method === "DELETE" && match) {
       list = list.filter((p) => p.id !== Number(match[1]));
-      return { ok: true, status: 204, json: async () => null };
+      return new Response(null, { status: 204 });
     }
     return json({ detail: "Not found" }, 404);
   });

@@ -155,6 +155,8 @@ const en = {
     password: "Password",
     submit: "Sign in",
     busy: "Signing in…",
+    invalid: "Wrong username or password.",
+    tooMany: "Too many failed attempts. Try again in {minutes} min.",
   },
   notFound: {
     text: "This page doesn't exist.",
