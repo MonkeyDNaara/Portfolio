@@ -4,7 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { api } from "./api.js";
 import { useAuth } from "./auth.jsx";
 import ProjectForm from "./components/ProjectForm.jsx";
+import WakeUpNotice from "./components/WakeUpNotice.jsx";
 import { localized, useLanguage } from "./i18n/LanguageProvider.jsx";
+import { MAX_WAIT_MS, isRetryable, retryDelay, sleep } from "./wakeUp.js";
 
 const ProjectsContext = createContext(null);
 
@@ -34,15 +36,31 @@ export function ProjectsProvider({ children }) {
   const [editing, setEditing] = useState(undefined); // undefined = closed, null = new, object = edit
   const [notice, setNotice] = useState(null); // { text, error? }
   const noticeTimer = useRef(null);
+  const loadId = useRef(0); // only the newest reload() may set state
 
+  // While the free-tier API wakes up, failed requests are retried for up to MAX_WAIT_MS.
   const reload = useCallback(async () => {
+    const id = ++loadId.current;
+    const started = Date.now();
     setError(null);
-    try {
-      setProjects(await api("/projects", { token }));
-    } catch (e) {
-      setError(e);
+    for (let attempt = 0; ; attempt++) {
+      try {
+        const data = await api("/projects", { token });
+        if (id === loadId.current) setProjects(data);
+        return;
+      } catch (e) {
+        if (id !== loadId.current) return;
+        const delay = retryDelay(attempt);
+        if (!isRetryable(e) || Date.now() - started + delay > MAX_WAIT_MS) {
+          setError(e);
+          return;
+        }
+        await sleep(delay);
+        if (id !== loadId.current) return;
+      }
     }
   }, [token]);
+  useEffect(() => () => void loadId.current++, []); // stop retrying on unmount
 
   useEffect(() => {
     reload();
@@ -131,6 +149,7 @@ export function ProjectsProvider({ children }) {
         />
       )}
       {notice && <Toast notice={notice} />}
+      <WakeUpNotice loading={!projects && !error} failed={Boolean(error)} />
     </ProjectsContext.Provider>
   );
 }
