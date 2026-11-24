@@ -39,7 +39,7 @@ const en = {
   projects: {
     title: "Projects",
     lead: "Things I've built, newest first. Each card shows the tools I used.",
-    loading: "Loading projects… (the free-tier server can take about 30 s to wake up)",
+    loading: "Loading projects…",
     empty: "No projects yet.",
     add: "+ Add project",
     code: "Code",
@@ -163,8 +163,12 @@ const en = {
     back: "← Back home",
   },
   status: {
-    loading: "Loading…",
     retry: "Try again",
+  },
+  wake: {
+    title: "Waking up the API",
+    hint: "Free-tier server, takes up to ~30 s",
+    ready: "Ready ✓",
   },
 };
 

@@ -1388,6 +1388,174 @@ button.chip:focus-visible {
     height: 290px;
   }
 }
+/* ---------- loading: skeletons + wake-up pill (free-tier API) ---------- */
+.skeleton {
+  pointer-events: none;
+}
+.skeleton .shot,
+.skeleton .sk-line,
+.skeleton .sk-chips i {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.skeleton .shot::after,
+.skeleton .sk-line::after,
+.skeleton .sk-chips i::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--glow), transparent);
+  transform: translateX(-100%);
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+@keyframes shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+.sk-line {
+  display: block;
+  height: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+.sk-line.title {
+  width: 45%;
+  height: 16px;
+  margin: 0 0 6px;
+}
+.sk-line.short {
+  width: 65%;
+}
+.sk-chips {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 18px;
+}
+.sk-chips i {
+  width: 64px;
+  height: 22px;
+  border-radius: 999px;
+}
+.view-skeleton .shot {
+  aspect-ratio: 4 / 1;
+  border-radius: var(--radius);
+}
+.view-skeleton .body {
+  display: flex;
+  flex-direction: column;
+  max-width: 560px;
+  padding-top: 22px;
+}
+.project-modal .view-skeleton {
+  padding: 0 0 4px;
+}
+.project-modal .view-skeleton .shot {
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.project-modal .view-skeleton .body {
+  padding: 22px 28px 0;
+}
+
+.wake {
+  position: fixed;
+  inset: auto 0 24px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: fit-content;
+  max-width: calc(100vw - 32px);
+  margin: 0 auto;
+  padding: 10px 18px 12px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  animation: toast-in 0.2s ease-out;
+}
+.wake.ready {
+  animation: wake-out 0.3s ease-in 0.7s forwards;
+}
+@keyframes wake-out {
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.wake-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-left: 4px;
+}
+.wake-stack i {
+  display: block;
+  width: 28px;
+  height: 8px;
+  border-radius: 3px;
+  transform: skewX(-30deg);
+  animation: layer-up 1.8s ease-in-out infinite;
+}
+.wake-stack .ui {
+  background: var(--layer-ui-b);
+  animation-delay: 0.6s;
+}
+.wake-stack .api {
+  background: var(--layer-api-b);
+  animation-delay: 0.3s;
+}
+.wake-stack .db {
+  background: var(--layer-db-b);
+}
+.wake.ready .wake-stack i {
+  animation: none;
+  opacity: 1;
+}
+@keyframes layer-up {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+.wake-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+.wake-text strong {
+  color: var(--ink);
+  font-size: 14px;
+}
+.wake-text small {
+  color: var(--ink-2);
+  font-size: 12px;
+}
+.wake-time {
+  font-family: var(--font-mono);
+  color: var(--accent);
+}
+.wake-bar {
+  position: absolute;
+  inset: auto 18px 4px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--line);
+}
+.wake-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 1s linear;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -1395,8 +1563,19 @@ button.chip:focus-visible {
   .stack3d .scene,
   .chip.learning::before,
   .project-modal[open],
-  .toast {
+  .toast,
+  .wake,
+  .wake-stack i,
+  .skeleton .shot::after,
+  .skeleton .sk-line::after,
+  .skeleton .sk-chips i::after {
     animation: none;
+  }
+  .wake.ready {
+    animation: none;
+  }
+  .wake-bar span {
+    transition: none;
   }
   .reveal,
   .reveal li {

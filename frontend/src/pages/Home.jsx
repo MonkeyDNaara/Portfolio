@@ -1,13 +1,15 @@
 import { Link } from "react-router-dom";
 
 import ProjectCard from "../components/ProjectCard.jsx";
+import { SkeletonGrid } from "../components/ProjectSkeleton.jsx";
 import Stack3D from "../components/Stack3D.jsx";
 import { useLanguage } from "../i18n/LanguageProvider.jsx";
 import { usePublishedProjects } from "../projects.jsx";
 
 export default function Home() {
   const { t } = useLanguage();
-  const { projects } = usePublishedProjects();
+  const { projects, error } = usePublishedProjects();
+  const loading = !projects && !error;
   // Featured projects first; if none are featured yet, show the first three.
   const list = projects || [];
   const featured = list.filter((p) => p.featured);
@@ -47,17 +49,21 @@ export default function Home() {
         ))}
       </ul>
 
-      {shown.length > 0 && (
+      {(loading || shown.length > 0) && (
         <section id="work" aria-labelledby="work-title">
           <div className="section-head">
             <h2 id="work-title">{t("home.selected")}</h2>
             <Link to="/projects">{t("home.allProjects")}</Link>
           </div>
-          <div className={shown.length === 3 ? "bento" : "project-grid"}>
-            {shown.map((p) => (
-              <ProjectCard key={p.id} project={p} />
-            ))}
-          </div>
+          {loading ? (
+            <SkeletonGrid count={3} bento />
+          ) : (
+            <div className={shown.length === 3 ? "bento" : "project-grid"}>
+              {shown.map((p) => (
+                <ProjectCard key={p.id} project={p} />
+              ))}
+            </div>
+          )}
         </section>
       )}
     </>

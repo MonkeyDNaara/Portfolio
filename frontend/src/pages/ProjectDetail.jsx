@@ -2,7 +2,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 import OwnerActions from "../components/OwnerActions.jsx";
 import ProjectView from "../components/ProjectView.jsx";
-import { ErrorMessage, Loading } from "../components/Status.jsx";
+import { ProjectViewSkeleton } from "../components/ProjectSkeleton.jsx";
+import { ErrorMessage } from "../components/Status.jsx";
 import { useLanguage } from "../i18n/LanguageProvider.jsx";
 import { useProject, useProjects } from "../projects.jsx";
 
@@ -20,7 +21,13 @@ export default function ProjectDetail() {
     </Link>
   );
 
-  if (loading) return <Loading>{t("projects.loading")}</Loading>;
+  if (loading)
+    return (
+      <section className="page-head">
+        {back}
+        <ProjectViewSkeleton />
+      </section>
+    );
   if (error || notFound)
     return (
       <section className="page-head">

@@ -39,7 +39,7 @@ const de = {
   projects: {
     title: "Projekte",
     lead: "Was ich gebaut habe, das Neueste zuerst. Jede Karte zeigt die Tools, die ich verwendet habe.",
-    loading: "Projekte werden geladen… (der Free-Tier-Server braucht manchmal ca. 30 s zum Aufwachen)",
+    loading: "Projekte werden geladen…",
     empty: "Noch keine Projekte.",
     add: "+ Projekt hinzufügen",
     code: "Code",
@@ -163,8 +163,12 @@ const de = {
     back: "← Zur Startseite",
   },
   status: {
-    loading: "Lädt…",
     retry: "Nochmal versuchen",
+  },
+  wake: {
+    title: "API wird geweckt",
+    hint: "Free-Tier-Server, dauert bis zu ~30 s",
+    ready: "Bereit ✓",
   },
 };
 

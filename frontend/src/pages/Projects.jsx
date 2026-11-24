@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 
 import ProjectCard from "../components/ProjectCard.jsx";
-import { ErrorMessage, Loading } from "../components/Status.jsx";
+import { SkeletonGrid } from "../components/ProjectSkeleton.jsx";
+import { ErrorMessage } from "../components/Status.jsx";
 import { useLanguage } from "../i18n/LanguageProvider.jsx";
 import { useProjects } from "../projects.jsx";
 
@@ -34,7 +35,7 @@ export default function Projects() {
       </section>
 
       {error && <ErrorMessage error={error} onRetry={reload} />}
-      {!error && !projects && <Loading>{t("projects.loading")}</Loading>}
+      {!error && !projects && <SkeletonGrid count={6} />}
       {projects?.length === 0 && <p className="status">{t("projects.empty")}</p>}
 
       <div className="project-grid">

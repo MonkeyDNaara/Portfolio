@@ -5,8 +5,9 @@ import { useLanguage } from "../i18n/LanguageProvider.jsx";
 import { useProject, useProjects } from "../projects.jsx";
 import { Close } from "./Icons.jsx";
 import OwnerActions from "./OwnerActions.jsx";
+import { ProjectViewSkeleton } from "./ProjectSkeleton.jsx";
 import ProjectView from "./ProjectView.jsx";
-import { ErrorMessage, Loading } from "./Status.jsx";
+import { ErrorMessage } from "./Status.jsx";
 
 /**
  * /projects/:id opened from a card: the page you came from stays rendered underneath
@@ -52,7 +53,7 @@ export default function ProjectModal() {
         <button className="icon-btn modal-close" onClick={() => close()} aria-label={t("projects.close")}>
           <Close />
         </button>
-        {loading && <Loading>{t("projects.loading")}</Loading>}
+        {loading && <ProjectViewSkeleton />}
         {(error || notFound) && (
           <ErrorMessage error={error || new Error(t("projects.notFound"))} onRetry={error ? reload : undefined} />
         )}
