@@ -31,7 +31,7 @@ export async function api(path, { method = "GET", body, token } = {}) {
       body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
     });
   } catch {
-    throw new ApiError(0, "Can't reach the API. The free-tier server may be waking up, try again in about 30 seconds.");
+    throw new ApiError(0, "Can't reach the API right now. Try again in a minute.");
   }
 
   if (res.status === 204) return null;

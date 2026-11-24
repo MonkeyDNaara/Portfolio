@@ -4,7 +4,7 @@
 
 **Live:** [portfolio-web-pepm.onrender.com](https://portfolio-web-pepm.onrender.com) · **API docs:** [portfolio-api-u2j6.onrender.com/docs](https://portfolio-api-u2j6.onrender.com/docs)
 
-> Free Render tier: the API sleeps after a while, so the first request can take about 30 seconds.
+> Free Render tier: the API sleeps after a while, so the first request can take about 30 seconds. While it wakes up, the site shows placeholder cards and a small status pill and retries on its own.
 
 My portfolio site, built as a small but complete full-stack project. My projects live in a PostgreSQL database (Neon), and when I'm logged in I can add, edit, hide, feature and reorder them right on the site, no code changes needed. I came from industrial automation, so I wanted a project that shows the whole path: database, API, auth, frontend, tests, CI and deployment.
 
